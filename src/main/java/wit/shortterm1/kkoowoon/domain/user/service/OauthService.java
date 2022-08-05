@@ -1,4 +1,4 @@
-package wit.shortterm1.kkoowoon.domain.service;
+package wit.shortterm1.kkoowoon.domain.user.service;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;

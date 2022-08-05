@@ -1,14 +1,14 @@
-package wit.shortterm1.kkoowoon.domain.service;
+package wit.shortterm1.kkoowoon.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import wit.shortterm1.kkoowoon.domain.domain.Account;
-import wit.shortterm1.kkoowoon.domain.domain.AuthAccount;
-import wit.shortterm1.kkoowoon.domain.exception.JwtTokenException;
-import wit.shortterm1.kkoowoon.domain.repository.AccountRepository;
+import wit.shortterm1.kkoowoon.domain.user.persist.Account;
+import wit.shortterm1.kkoowoon.domain.user.persist.AuthAccount;
+import wit.shortterm1.kkoowoon.domain.user.exception.JwtTokenException;
+import wit.shortterm1.kkoowoon.domain.user.repository.AccountRepository;
 import wit.shortterm1.kkoowoon.global.error.exception.ErrorCode;
 
 @Service

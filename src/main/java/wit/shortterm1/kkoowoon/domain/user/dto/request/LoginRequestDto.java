@@ -1,4 +1,4 @@
-package wit.shortterm1.kkoowoon.domain.dto.request;
+package wit.shortterm1.kkoowoon.domain.user.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

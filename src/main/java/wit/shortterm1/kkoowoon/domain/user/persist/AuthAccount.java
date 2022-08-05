@@ -1,4 +1,4 @@
-package wit.shortterm1.kkoowoon.domain.domain;
+package wit.shortterm1.kkoowoon.domain.user.persist;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;

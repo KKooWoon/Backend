@@ -1,15 +1,18 @@
-package wit.shortterm1.kkoowoon.domain.domain;
+package wit.shortterm1.kkoowoon.domain.user.persist;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import wit.shortterm1.kkoowoon.global.common.BaseTimeEntity;
 
 import javax.persistence.*;
 
 @Entity @Getter
 @Table(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Account {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class Account extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_id")
@@ -48,9 +51,12 @@ public class Account {
     @Column(name = "account_description")
     private String description;
 
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
+
     private Account(String kakaoId, String nickname, int age,
                     double height, double weight, int level, int exp,
-                    double bodyFatPct, double skeletalMuscleMass, String description) {
+                    double bodyFatPct, double skeletalMuscleMass, String description, String profileImageUrl) {
         this.kakaoId = kakaoId;
         this.nickname = nickname;
         this.age = age;
@@ -61,12 +67,13 @@ public class Account {
         this.bodyFatPct = bodyFatPct;
         this.skeletalMuscleMass = skeletalMuscleMass;
         this.description = description;
+        this.profileImageUrl = profileImageUrl;
         role = "USER";
     }
 
     public static Account of(String kakaoId, String nickname, int age,
                              double height, double weight, int level, int exp,
-                             double bodyFatPct, double skeletalMuscleMass, String description) {
-        return new Account(kakaoId, nickname, age, height, weight, level, exp, bodyFatPct, skeletalMuscleMass, description);
+                             double bodyFatPct, double skeletalMuscleMass, String description, String profileImageUrl) {
+        return new Account(kakaoId, nickname, age, height, weight, level, exp, bodyFatPct, skeletalMuscleMass, description, profileImageUrl);
     }
 }

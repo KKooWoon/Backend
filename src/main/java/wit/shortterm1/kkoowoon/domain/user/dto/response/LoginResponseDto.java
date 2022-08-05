@@ -1,4 +1,4 @@
-package wit.shortterm1.kkoowoon.domain.dto.response;
+package wit.shortterm1.kkoowoon.domain.user.dto.response;
 
 import lombok.AccessLevel;
 import lombok.Getter;

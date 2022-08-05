@@ -1,9 +1,9 @@
-package wit.shortterm1.kkoowoon.domain.dto.response;
+package wit.shortterm1.kkoowoon.domain.user.dto.response;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import wit.shortterm1.kkoowoon.domain.domain.Account;
+import wit.shortterm1.kkoowoon.domain.user.persist.Account;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,8 +27,10 @@ public class UserInfoResponseDto {
 
     private String description;
 
+    private String profileImageUrl;
+
     private UserInfoResponseDto(String nickname, int age, double height, double weight, int level,
-                               int exp, double bodyFatPct, double skeletalMuscleMass, String description) {
+                               int exp, double bodyFatPct, double skeletalMuscleMass, String description, String profileImageUrl) {
         this.nickname = nickname;
         this.age = age;
         this.height = height;
@@ -38,11 +40,12 @@ public class UserInfoResponseDto {
         this.bodyFatPct = bodyFatPct;
         this.skeletalMuscleMass = skeletalMuscleMass;
         this.description = description;
+        this.profileImageUrl = profileImageUrl;
     }
 
     public static UserInfoResponseDto createDto(Account account) {
         return new UserInfoResponseDto(account.getNickname(), account.getAge(), account.getHeight(), account.getWeight(), account.getLevel(),
-                account.getExp(), account.getBodyFatPct(), account.getSkeletalMuscleMass(), account.getDescription());
+                account.getExp(), account.getBodyFatPct(), account.getSkeletalMuscleMass(), account.getDescription(), account.getProfileImageUrl());
 
     }
 }

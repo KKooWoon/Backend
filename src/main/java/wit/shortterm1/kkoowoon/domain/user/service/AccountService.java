@@ -1,19 +1,20 @@
-package wit.shortterm1.kkoowoon.domain.service;
+package wit.shortterm1.kkoowoon.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wit.shortterm1.kkoowoon.domain.dto.response.UserInfoResponseDto;
-import wit.shortterm1.kkoowoon.domain.domain.Account;
-import wit.shortterm1.kkoowoon.domain.dto.request.SignUpRequestDto;
-import wit.shortterm1.kkoowoon.domain.dto.response.LoginResponseDto;
-import wit.shortterm1.kkoowoon.domain.dto.response.TempResponse;
-import wit.shortterm1.kkoowoon.domain.exception.NoSuchUserException;
-import wit.shortterm1.kkoowoon.domain.exception.UserDuplicateException;
-import wit.shortterm1.kkoowoon.domain.exception.WrongPasswordException;
-import wit.shortterm1.kkoowoon.domain.repository.AccountRepository;
+import wit.shortterm1.kkoowoon.domain.user.dto.response.NicknameDuplicateDto;
+import wit.shortterm1.kkoowoon.domain.user.dto.response.UserInfoResponseDto;
+import wit.shortterm1.kkoowoon.domain.user.persist.Account;
+import wit.shortterm1.kkoowoon.domain.user.dto.request.SignUpRequestDto;
+import wit.shortterm1.kkoowoon.domain.user.dto.response.LoginResponseDto;
+import wit.shortterm1.kkoowoon.domain.user.dto.response.TempResponse;
+import wit.shortterm1.kkoowoon.domain.user.exception.NoSuchUserException;
+import wit.shortterm1.kkoowoon.domain.user.exception.UserDuplicateException;
+import wit.shortterm1.kkoowoon.domain.user.exception.WrongPasswordException;
+import wit.shortterm1.kkoowoon.domain.user.repository.AccountRepository;
 import wit.shortterm1.kkoowoon.global.common.jwt.JwtProvider;
 import wit.shortterm1.kkoowoon.global.error.exception.ErrorCode;
 
@@ -92,5 +93,18 @@ public class AccountService {
         Account account = accountRepository.findByNickname(nickname)
                 .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
         return UserInfoResponseDto.createDto(account);
+    }
+
+    public NicknameDuplicateDto isDuplicateNickname(String nickname) {
+        if (accountRepository.findByNickname(nickname).isPresent()) {
+            return NicknameDuplicateDto.createDto(nickname, true);
+        }
+        return NicknameDuplicateDto.createDto(nickname, false);
+    }
+
+    public void checkUserExist(String nickname) {
+        if (!accountRepository.existsByNickname(nickname)) {
+            throw new NoSuchUserException(ErrorCode.NO_SUCH_USER);
+        }
     }
 }

@@ -1,14 +1,17 @@
-package wit.shortterm1.kkoowoon.domain.controller;
+package wit.shortterm1.kkoowoon.domain.user.controller;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wit.shortterm1.kkoowoon.domain.dto.request.SignUpRequestDto;
-import wit.shortterm1.kkoowoon.domain.dto.response.LoginResponseDto;
-import wit.shortterm1.kkoowoon.domain.dto.response.TempResponse;
-import wit.shortterm1.kkoowoon.domain.dto.response.UserInfoResponseDto;
-import wit.shortterm1.kkoowoon.domain.service.AccountService;
+import wit.shortterm1.kkoowoon.domain.user.dto.request.SignUpRequestDto;
+import wit.shortterm1.kkoowoon.domain.user.dto.response.LoginResponseDto;
+import wit.shortterm1.kkoowoon.domain.user.dto.response.NicknameDuplicateDto;
+import wit.shortterm1.kkoowoon.domain.user.dto.response.TempResponse;
+import wit.shortterm1.kkoowoon.domain.user.dto.response.UserInfoResponseDto;
+import wit.shortterm1.kkoowoon.domain.user.service.AccountService;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -47,6 +50,14 @@ public class AccountController {
     @GetMapping("/userInfo")
     public ResponseEntity<UserInfoResponseDto> userInfo(@RequestParam("nickname") String nickname) {
         return new ResponseEntity<>(accountService.getUserInfo(nickname), HttpStatus.OK);
+    }
+
+    @GetMapping("/duplicate")
+    @ApiOperation(value = "닉네임 중복 여부를 체크", notes = "닉네임 값을 닉네임 중복 여부를 json으로 리턴해주는 API")
+    public ResponseEntity<NicknameDuplicateDto> checkNicknameDuplicate(
+            @ApiParam(value = "체크할 닉네임", required = true, example = "꾸운닉123")
+            @RequestParam("nickname") String nickname) {
+        return new ResponseEntity<>(accountService.isDuplicateNickname(nickname), HttpStatus.OK);
     }
 
 //    @GetMapping("/oauth/kakao")
