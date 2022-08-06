@@ -54,7 +54,7 @@ public class FollowService {
                 .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
         FollowerListDto followerListDto = FollowerListDto.createDto();
         followRepository.findFollowerListByTarget(account)
-                .forEach(follow -> followerListDto.addFollower(FollowInfoDto.createDto(follow.getSource().getNickname(), nickname, account)));
+                .forEach(follow -> followerListDto.addFollower(FollowInfoDto.createDto(follow.getSource().getNickname(), account)));
         return followerListDto;
     }
 
@@ -63,7 +63,7 @@ public class FollowService {
                 .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
         FollowingListDto followingListDto = FollowingListDto.createDto();
         followRepository.findFollowingListBySource(account)
-                .forEach(follow -> followingListDto.addFollowing(FollowInfoDto.createDto(nickname, follow.getFollowing().getNickname(), account)));
+                .forEach(follow -> followingListDto.addFollowing(FollowInfoDto.createDto(nickname, follow.getFollowing())));
         return followingListDto;
     }
 }
