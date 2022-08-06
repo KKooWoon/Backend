@@ -13,7 +13,7 @@ import wit.shortterm1.kkoowoon.domain.etc.dto.response.FollowingListDto;
 import wit.shortterm1.kkoowoon.domain.etc.service.FollowService;
 
 @RestController
-@Api("아바타 관련 API")
+@Api(tags = "팔로우 관련 API")
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/follow")
 public class FollowController {

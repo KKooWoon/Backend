@@ -17,8 +17,8 @@ import wit.shortterm1.kkoowoon.domain.user.service.AccountService;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@Api(tags = "유저 관련 API")
 @RequiredArgsConstructor
+@Api(tags = "유저 관련 API")
 @RequestMapping("/api/v1/user")
 public class AccountController {
     private final AccountService accountService;

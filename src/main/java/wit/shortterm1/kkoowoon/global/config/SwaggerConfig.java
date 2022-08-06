@@ -19,7 +19,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.OAS_30)
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("bbpsp.backend"))
+                .apis(RequestHandlerSelectors.basePackage("wit.shortterm1.kkoowoon"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
@@ -27,7 +27,7 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("WIT-SHORT-TERM-1")
+                .title("KKooWoon API Referene")
                 .description("Swagger2.0")
                 .version("1.0")
                 .build();

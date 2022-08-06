@@ -12,7 +12,7 @@ import wit.shortterm1.kkoowoon.domain.avatar.dto.response.UnlockAvatarListDto;
 import wit.shortterm1.kkoowoon.domain.avatar.service.AvatarService;
 
 @RestController
-@Api("아바타 관련 API")
+@Api(tags = "아바타 관련 API")
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/avatar")
 public class AvatarController {
