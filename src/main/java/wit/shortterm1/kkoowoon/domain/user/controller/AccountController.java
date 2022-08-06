@@ -1,5 +1,6 @@
 package wit.shortterm1.kkoowoon.domain.user.controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import wit.shortterm1.kkoowoon.domain.user.service.AccountService;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
+@Api(tags = "유저 관련 API")
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user")
 public class AccountController {
