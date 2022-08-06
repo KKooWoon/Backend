@@ -29,7 +29,7 @@ public class FollowInfoDto {
         this.description = description;
     }
 
-    public static FollowInfoDto createDto(String sourceNickname, String targetNickname, Account account) {
-        return new FollowInfoDto(sourceNickname, targetNickname, account.getProfileImageUrl(), account.getDescription());
+    public static FollowInfoDto createDto(String sourceNickname, Account targetAccount) {
+        return new FollowInfoDto(sourceNickname, targetAccount.getNickname(), targetAccount.getProfileImageUrl(), targetAccount.getDescription());
     }
 }
