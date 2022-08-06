@@ -46,6 +46,6 @@ public class RaceInfoDto {
 
     public static RaceInfoDto createDto(Race race) {
         return new RaceInfoDto(race.getId(), race.getStartedAt(), race.getEndedAt(),
-                race.getMemberCount(), race.getName(), race.getRaceCode(), "tag");
+                race.getMemberCount(), race.getName(), race.getRaceCode(), race.getRaceTag());
     }
 }

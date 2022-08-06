@@ -37,7 +37,7 @@ public class RaceService {
 
         String raceCode = createRaceCode();
         Race race = Race.of(raceCreateDto.getStartedAt(), raceCreateDto.getEndedAt(), 1,
-                raceCreateDto.getRaceName(), raceCode, raceCreateDto.getRacePassword(), ownerNickname);
+                raceCreateDto.getRaceName(), raceCode, raceCreateDto.getRacePassword(), ownerNickname, raceCreateDto.getRaceTag());
         Race newRace = raceRepository.save(race);
         participateRepository.save(Participate.of(account, race));
         return RaceCreateResultDto
@@ -74,7 +74,7 @@ public class RaceService {
                 .orElseThrow(() -> new NoSuchParticipateException(ErrorCode.NO_SUCH_PARTICIPATE));
 
         participateRepository.delete(participate);
-        race.substractMemberCount();
+        race.subtractMemberCount();
 
         return RaceLeaveResultDto.createDto(true, nickname, race.getName(), LocalDateTime.now());
     }

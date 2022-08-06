@@ -23,14 +23,20 @@ public class RaceCreateDto {
     @ApiModelProperty(value = "레이스 비밀번호", required = true, example = "kkoowoon1234")
     private String racePassword;
 
-    private RaceCreateDto(LocalDate startedAt, LocalDate endedAt, String raceName, String racePassword) {
+    @ApiModelProperty(value = "레이스 해시태그", required = true, example = "#다이어트")
+    private String raceTag;
+
+    private RaceCreateDto(LocalDate startedAt, LocalDate endedAt,
+                          String raceName, String racePassword, String raceTag) {
         this.startedAt = startedAt;
         this.endedAt = endedAt;
         this.raceName = raceName;
         this.racePassword = racePassword;
+        this.raceTag = raceTag;
     }
 
-    public static RaceCreateDto createDto(LocalDate startedAt, LocalDate endedAt, String raceName, String racePassword) {
-        return new RaceCreateDto(startedAt, endedAt, raceName, racePassword);
+    public static RaceCreateDto createDto(LocalDate startedAt, LocalDate endedAt,
+                                          String raceName, String racePassword, String raceTag) {
+        return new RaceCreateDto(startedAt, endedAt, raceName, racePassword, raceTag);
     }
 }
