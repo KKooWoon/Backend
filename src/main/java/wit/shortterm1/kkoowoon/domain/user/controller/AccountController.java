@@ -8,10 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wit.shortterm1.kkoowoon.domain.user.dto.request.SignUpRequestDto;
-import wit.shortterm1.kkoowoon.domain.user.dto.response.LoginResponseDto;
-import wit.shortterm1.kkoowoon.domain.user.dto.response.NicknameDuplicateDto;
-import wit.shortterm1.kkoowoon.domain.user.dto.response.TempResponse;
-import wit.shortterm1.kkoowoon.domain.user.dto.response.UserInfoResponseDto;
+import wit.shortterm1.kkoowoon.domain.user.dto.response.*;
 import wit.shortterm1.kkoowoon.domain.user.service.AccountService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,8 +47,16 @@ public class AccountController {
     }
 
     @GetMapping("/userInfo")
-    public ResponseEntity<UserInfoResponseDto> userInfo(@RequestParam("nickname") String nickname) {
+    public ResponseEntity<UserInfoDto> userInfo(@RequestParam("nickname") String nickname) {
         return new ResponseEntity<>(accountService.getUserInfo(nickname), HttpStatus.OK);
+    }
+
+    @GetMapping("/main-page")
+    @ApiOperation(value = "메인 페이지 전체 정보 로딩", notes = "로그인 후 메인페이지 로딩을 위해 먼저 호출하는 API")
+    public ResponseEntity<MainPageInfoDto> mainPage(
+            @ApiParam(value = "본인 닉네임", required = true, example = "꾸운닉123")
+            @RequestParam("nickname") String nickname) {
+        return new ResponseEntity<>(accountService.getMainPageInfo(nickname), HttpStatus.OK);
     }
 
     @GetMapping("/duplicate")
