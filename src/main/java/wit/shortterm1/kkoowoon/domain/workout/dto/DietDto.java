@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wit.shortterm1.kkoowoon.domain.workout.persist.Diet;
+import wit.shortterm1.kkoowoon.domain.workout.persist.Food;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,16 +21,16 @@ public class DietDto {
     private String name;
 
     @ApiModelProperty(value = "음식 무게", required = true, example = "450.4(g)")
-    private List<FoodDto> foodDtoList;
+    private final List<FoodDto> foodDtoList = new ArrayList<>();
 
-    private DietDto(Long dietId, String name) {
+    private DietDto(Long dietId, String name, List<Food> foodList) {
         this.dietId = dietId;
         this.name = name;
-        foodDtoList = new ArrayList<>();
+        foodList.forEach(food -> foodDtoList.add(FoodDto.createDto(food)));
     }
 
-    public static DietDto createDto(Diet diet) {
-        return new DietDto(diet.getId(), diet.getName());
+    public static DietDto createDto(Diet diet, List<Food> foodList) {
+        return new DietDto(diet.getId(), diet.getName(), foodList);
     }
 
     public void addFoodDto(FoodDto foodDto) {
