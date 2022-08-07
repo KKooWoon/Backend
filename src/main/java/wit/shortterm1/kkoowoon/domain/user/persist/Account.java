@@ -9,7 +9,7 @@ import wit.shortterm1.kkoowoon.global.common.BaseTimeEntity;
 import javax.persistence.*;
 
 @Entity @Getter
-@Table(name = "user")
+@Table(name = "account")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Account extends BaseTimeEntity {

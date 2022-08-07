@@ -10,10 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wit.shortterm1.kkoowoon.domain.workout.dto.request.CreateCardioDto;
 import wit.shortterm1.kkoowoon.domain.workout.dto.request.CreateDietDto;
-import wit.shortterm1.kkoowoon.domain.workout.dto.response.CardioCreateResultDto;
-import wit.shortterm1.kkoowoon.domain.workout.dto.response.DietCreateResultDto;
-import wit.shortterm1.kkoowoon.domain.workout.dto.response.WorkoutDeleteResultDto;
-import wit.shortterm1.kkoowoon.domain.workout.dto.response.WorkoutRecordDto;
+import wit.shortterm1.kkoowoon.domain.workout.dto.request.CreateWeightDto;
+import wit.shortterm1.kkoowoon.domain.workout.dto.response.*;
 import wit.shortterm1.kkoowoon.domain.workout.service.WorkoutRecordService;
 
 import java.time.LocalDate;
@@ -81,6 +79,28 @@ public class WorkoutRecordController {
             @ApiParam(value = "식단 ID", required = true, example = "4")
             @RequestParam Long dietId) {
         return new ResponseEntity<>(workoutRecordService.deleteDietRecord(nickname, dietId), HttpStatus.OK);
+    }
+
+    @PostMapping("/weight")
+    @ApiOperation(value = "웨이트를 새로 추가하는 API", notes = "웨이트 생성 DTO와 날짜를 기반으로 웨이트를 추가하는 API")
+    public ResponseEntity<WeightCreateResultDto> createWeightRecord(
+            @ApiParam(value = "닉네임", required = true, example = "꾸운닉123")
+            @RequestParam String nickname,
+            @ApiParam(value = "날짜", required = true, example = "2022-07-30")
+            @RequestParam @DateTimeFormat(iso = DATE) LocalDate date,
+            @ApiParam(value = "웨이트 생성 DTO", required = true, example = "문서 참고")
+            @RequestBody CreateWeightDto createWeightDto) {
+        return new ResponseEntity<>(workoutRecordService.createWeightRecord(nickname, date, createWeightDto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/weight")
+    @ApiOperation(value = "웨이트 기록을 삭제하는 API", notes = "웨이트 ID로 삭제하는 API")
+    public ResponseEntity<WorkoutDeleteResultDto> deleteWeightRecord(
+            @ApiParam(value = "닉네임", required = true, example = "꾸운닉123")
+            @RequestParam String nickname,
+            @ApiParam(value = "웨이트 ID", required = true, example = "4")
+            @RequestParam Long weightId) {
+        return new ResponseEntity<>(workoutRecordService.deleteWeightRecord(nickname, weightId), HttpStatus.OK);
     }
 
     /**

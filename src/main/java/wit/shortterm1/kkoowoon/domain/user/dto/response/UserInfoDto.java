@@ -7,7 +7,7 @@ import wit.shortterm1.kkoowoon.domain.user.persist.Account;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserInfoResponseDto {
+public class UserInfoDto {
 
     private String nickname;
 
@@ -29,8 +29,8 @@ public class UserInfoResponseDto {
 
     private String profileImageUrl;
 
-    private UserInfoResponseDto(String nickname, int age, double height, double weight, int level,
-                               int exp, double bodyFatPct, double skeletalMuscleMass, String description, String profileImageUrl) {
+    private UserInfoDto(String nickname, int age, double height, double weight, int level,
+                        int exp, double bodyFatPct, double skeletalMuscleMass, String description, String profileImageUrl) {
         this.nickname = nickname;
         this.age = age;
         this.height = height;
@@ -43,8 +43,8 @@ public class UserInfoResponseDto {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public static UserInfoResponseDto createDto(Account account) {
-        return new UserInfoResponseDto(account.getNickname(), account.getAge(), account.getHeight(), account.getWeight(), account.getLevel(),
+    public static UserInfoDto createDto(Account account) {
+        return new UserInfoDto(account.getNickname(), account.getAge(), account.getHeight(), account.getWeight(), account.getLevel(),
                 account.getExp(), account.getBodyFatPct(), account.getSkeletalMuscleMass(), account.getDescription(), account.getProfileImageUrl());
 
     }

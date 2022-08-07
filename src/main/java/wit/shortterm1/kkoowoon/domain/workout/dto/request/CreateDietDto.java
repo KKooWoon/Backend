@@ -17,17 +17,17 @@ public class CreateDietDto {
 
     @ApiModelProperty(value = "음식 리스트", required = true,
             example = "\"foodList\": [\n" +
-            "      {\n" +
-            "          \"calorie\" : 100.3,\n" +
-            "          \"name\" : \"닭가슴살\",\n" +
-            "          \"weight\" : 34.5\n" +
-            "      },\n" +
-            "      {\n" +
-            "          \"calorie\" : 34.6,\n" +
-            "          \"name\" : \"프로틴 음료\",\n" +
-            "          \"weight\" : 250\n" +
-            "      }      \n" +
-            "  ]")
+                    "      {\n" +
+                    "          \"calorie\" : 100.3,\n" +
+                    "          \"name\" : \"닭가슴살\",\n" +
+                    "          \"weight\" : 34.5\n" +
+                    "      },\n" +
+                    "      {\n" +
+                    "          \"calorie\" : 34.6,\n" +
+                    "          \"name\" : \"프로틴 음료\",\n" +
+                    "          \"weight\" : 250\n" +
+                    "      }      \n" +
+                    "  ]")
     private List<FoodDto> foodList;
 
 }

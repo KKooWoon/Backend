@@ -55,6 +55,9 @@ public class WorkoutRecordDto {
     }
 
     public static WorkoutRecordDto createDto(WorkoutRecord record) {
+        if (record == null) {
+            return null;
+        }
         return new WorkoutRecordDto(record.getId(), record.isConfirmed(),
                 record.getCurrentWeight(), record.getRecordDate(), record.getCreatedAt());
     }

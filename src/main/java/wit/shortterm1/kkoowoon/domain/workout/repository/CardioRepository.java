@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import wit.shortterm1.kkoowoon.domain.workout.persist.Cardio;
 import wit.shortterm1.kkoowoon.domain.workout.persist.Weight;
+import wit.shortterm1.kkoowoon.domain.workout.persist.WorkoutRecord;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ public interface CardioRepository extends JpaRepository<Cardio, Long> {
 
     @Query("SELECT c FROM Cardio c" +
             " LEFT JOIN FETCH c.workoutRecord wr" +
-            " WHERE wr.id =:recordId")
+            " WHERE wr =:record")
     @Transactional(readOnly = true)
-    List<Cardio> findByRecordId(@Param("recordId") Long recordId);
+    List<Cardio> findByRecord(@Param("record") WorkoutRecord record);
 }
