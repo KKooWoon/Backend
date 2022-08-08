@@ -14,6 +14,8 @@ import wit.shortterm1.kkoowoon.domain.race.repository.RaceRepository;
 import wit.shortterm1.kkoowoon.domain.user.exception.NoSuchUserException;
 import wit.shortterm1.kkoowoon.domain.user.persist.Account;
 import wit.shortterm1.kkoowoon.domain.user.repository.AccountRepository;
+import wit.shortterm1.kkoowoon.domain.user.service.AccountService;
+import wit.shortterm1.kkoowoon.domain.workout.exception.NoSuchRecordException;
 import wit.shortterm1.kkoowoon.global.error.exception.ErrorCode;
 
 import java.time.LocalDate;
@@ -24,48 +26,48 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class RaceService {
-    private final AccountRepository accountRepository;
     private final RaceRepository raceRepository;
     private final RaceInvitationRepository raceInvitationRepository;
     private final ParticipateRepository participateRepository;
+    private final AccountRepository accountRepository;
 
     @Transactional
-    public RaceCreateResultDto createRace(String ownerNickname, RaceCreateDto raceCreateDto) {
-        Account account = accountRepository.findByNickname(ownerNickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public RaceCreateResultDto createRace(Long ownerId, RaceCreateDto raceCreateDto) {
+        Account account = getAccount(ownerId);
         checkRaceDuration(raceCreateDto.getStartedAt(), raceCreateDto.getEndedAt());
 
         String raceCode = createRaceCode();
-        Race race = Race.of(raceCreateDto.getStartedAt(), raceCreateDto.getEndedAt(), 1,
-                raceCreateDto.getRaceName(), raceCode, raceCreateDto.getRacePassword(), ownerNickname, raceCreateDto.getRaceTag());
+        Race race = Race.of(raceCreateDto.getStartedAt(), raceCreateDto.getEndedAt(), raceCreateDto.getRaceName(),
+                raceCode, raceCreateDto.getRacePassword(), account.getNickname(), raceCreateDto.getRaceTag());
         Race newRace = raceRepository.save(race);
         participateRepository.save(Participate.of(account, race));
         return RaceCreateResultDto
-                .createDto(true, newRace.getId(), LocalDateTime.now(), ownerNickname,
+                .createDto(true, newRace.getId(), LocalDateTime.now(), account.getNickname(),
                         raceCode, newRace.getRacePassword(), newRace.getName());
     }
 
-    @Transactional
-    public RaceParticipateResultDto participateRace(String nickname, String raceCode, String racePassword) {
-        Account account = accountRepository.findByNickname(nickname)
+    private Account getAccount(Long accountId) {
+        return accountRepository.findById(accountId)
                 .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
-        Race race = raceRepository.findByRaceCode(raceCode)
-                .orElseThrow(() -> new NoSuchRaceException(ErrorCode.NO_SUCH_RACE));
+    }
+
+    @Transactional
+    public RaceParticipateResultDto participateRace(Long accountId, String raceCode, String racePassword) {
+        Account account = getAccount(accountId);
+        Race race = getRaceByRaceCode(raceCode);
 
         checkRacePassword(race.getRacePassword(), racePassword);
         checkAlreadyParticipateRace(account, race);
 
         Participate participate = participateRepository.save(Participate.of(account, race));
         race.addMemberCount();
-        return RaceParticipateResultDto.createDto(true, nickname, race.getName(), participate.getCreatedAt());
+        return RaceParticipateResultDto.createDto(true, account.getNickname(), race.getName(), participate.getCreatedAt());
     }
 
     @Transactional
-    public RaceLeaveResultDto leaveRace(String nickname, String raceCode) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
-        Race race = raceRepository.findByRaceCode(raceCode)
-                .orElseThrow(() -> new NoSuchRaceException(ErrorCode.NO_SUCH_RACE));
+    public RaceLeaveResultDto leaveRace(Long accountId, String raceCode) {
+        Account account = getAccount(accountId);
+        Race race = getRaceByRaceCode(raceCode);
 
         checkUserExistInRace(account, race);
         checkLeaveRacePossible(account, race);
@@ -76,21 +78,63 @@ public class RaceService {
         participateRepository.delete(participate);
         race.subtractMemberCount();
 
-        return RaceLeaveResultDto.createDto(true, nickname, race.getName(), LocalDateTime.now());
+        return RaceLeaveResultDto.createDto(true, account.getNickname(), race.getName(), LocalDateTime.now());
     }
 
     @Transactional
-    public RaceDeleteResultDto deleteRace(String ownerNickname, String raceCode, String racePassword) {
-        Account account = accountRepository.findByNickname(ownerNickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
-        Race race = raceRepository.findByRaceCode(raceCode)
-                .orElseThrow(() -> new NoSuchRaceException(ErrorCode.NO_SUCH_RACE));
+    public RaceDeleteResultDto deleteRace(Long accountId, String raceCode, String racePassword) {
+        Account account = getAccount(accountId);
+        Race race = getRaceByRaceCode(raceCode);
         checkDeleteRacePossible(account, race);
         checkRacePassword(race.getRacePassword(), racePassword);
 
         raceRepository.delete(race);
 
-        return RaceDeleteResultDto.createDto(true, LocalDateTime.now(), ownerNickname, raceCode, race.getName());
+        return RaceDeleteResultDto.createDto(true, LocalDateTime.now(), account.getNickname(), raceCode, race.getName());
+    }
+
+    public CurrentRaceListDto findCurrentRaceList(Long accountId) {
+        Account account = getAccount(accountId);
+        CurrentRaceListDto currentRaceListDto = CurrentRaceListDto.createDto();
+        participateRepository.findAllByAccount(account)
+                .stream()
+                .filter(this::isCurrentRace)
+                .forEach(p -> currentRaceListDto.addRace(RaceInfoDto.createDto(p.getRace())));
+
+        return currentRaceListDto;
+    }
+
+    public Race getRace(Long raceId) {
+        return raceRepository.findById(raceId)
+                .orElseThrow(() -> new NoSuchRecordException(ErrorCode.NO_SUCH_RACE));
+    }
+
+    public PastRaceListDto findPastRaceList(Long accountId) {
+        Account account = getAccount(accountId);
+        PastRaceListDto pastRaceListDto = PastRaceListDto.createDto();
+        participateRepository.findAllByAccount(account)
+                .stream()
+                .filter(this::isPastRace)
+                .forEach(p -> pastRaceListDto.addRace(RaceInfoDto.createDto(p.getRace())));
+
+        return pastRaceListDto;
+    }
+
+    public AllRaceListDto findAllRaceList(Long accountId) {
+        Account account = getAccount(accountId);
+        PastRaceListDto pastRaceListDto = PastRaceListDto.createDto();
+        CurrentRaceListDto currentRaceListDto = CurrentRaceListDto.createDto();
+        participateRepository.findAllByAccount(account)
+                .forEach(p -> {
+                    if (isPastRace(p)) pastRaceListDto.addRace(RaceInfoDto.createDto(p.getRace()));
+                    else currentRaceListDto.addRace(RaceInfoDto.createDto(p.getRace()));
+                });
+        return AllRaceListDto.createDto(currentRaceListDto, pastRaceListDto);
+    }
+
+    private Race getRaceByRaceCode(String raceCode) {
+        return raceRepository.findByRaceCode(raceCode)
+                .orElseThrow(() -> new NoSuchRaceException(ErrorCode.NO_SUCH_RACE));
     }
 
     private void checkDeleteRacePossible(Account account, Race race) {
@@ -127,12 +171,6 @@ public class RaceService {
         }
     }
 
-    private void checkUserExist(String ownerNickname) {
-        if (!accountRepository.existsByNickname(ownerNickname)) {
-            throw new NoSuchUserException(ErrorCode.NO_SUCH_USER);
-        }
-    }
-
     private String createRaceCode() {
         String invitationCode = makeRandomCode();
         List<String> all = raceInvitationRepository.findAllCode();
@@ -154,43 +192,6 @@ public class RaceService {
             builder.append((char) ((Math.random() * 26) + 65)); // A ~ Z
         }
         return builder.toString();
-    }
-
-    public CurrentRaceListDto findCurrentRaceList(String nickname) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
-        CurrentRaceListDto currentRaceListDto = CurrentRaceListDto.createDto();
-        participateRepository.findAllByAccount(account)
-                .stream()
-                .filter(this::isCurrentRace)
-                .forEach(p -> currentRaceListDto.addRace(RaceInfoDto.createDto(p.getRace())));
-
-        return currentRaceListDto;
-    }
-
-    public PastRaceListDto findPastRaceList(String nickname) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
-        PastRaceListDto pastRaceListDto = PastRaceListDto.createDto();
-        participateRepository.findAllByAccount(account)
-                .stream()
-                .filter(this::isPastRace)
-                .forEach(p -> pastRaceListDto.addRace(RaceInfoDto.createDto(p.getRace())));
-
-        return pastRaceListDto;
-    }
-
-    public AllRaceListDto findAllRaceList(String nickname) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
-        PastRaceListDto pastRaceListDto = PastRaceListDto.createDto();
-        CurrentRaceListDto currentRaceListDto = CurrentRaceListDto.createDto();
-        participateRepository.findAllByAccount(account)
-                .forEach(p -> {
-                    if (isPastRace(p)) pastRaceListDto.addRace(RaceInfoDto.createDto(p.getRace()));
-                    else currentRaceListDto.addRace(RaceInfoDto.createDto(p.getRace()));
-                });
-        return AllRaceListDto.createDto(currentRaceListDto, pastRaceListDto);
     }
 
     private boolean isCurrentRace(Participate p) {

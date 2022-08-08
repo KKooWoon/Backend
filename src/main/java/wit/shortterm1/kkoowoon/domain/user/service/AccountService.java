@@ -39,8 +39,6 @@ public class AccountService {
     private final JwtProvider jwtProvider;
     private final OauthService oauthService;
     private final FollowRepository followRepository;
-    private final RaceRepository raceRepository;
-    private final WorkoutRecordRepository workoutRecordRepository;
     private final RaceService raceService;
     private final WorkoutRecordService workoutRecordService;
 
@@ -66,9 +64,8 @@ public class AccountService {
         return new TempResponse("회원가입 성공", HttpStatus.CREATED);
     }
 
-    public LoginResponseDto reIssueAccessToken(String nickname, String refreshToken) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public LoginResponseDto reIssueAccessToken(Long accountId, String refreshToken) {
+        Account account = getAccount(accountId);
         jwtProvider.checkRefreshToken(account.getKakaoId(), refreshToken);
         String accessToken = jwtProvider.createAccessToken(account.getKakaoId(), account.getRole());
         return LoginResponseDto.createDto(accessToken, refreshToken);
@@ -88,20 +85,18 @@ public class AccountService {
         return LoginResponseDto.createDto(accessToken, refreshToken);
     }
 
-    public UserInfoDto getUserInfo(String nickname) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public UserInfoDto getUserInfo(Long accountId) {
+        Account account = getAccount(accountId);
         return UserInfoDto.createDto(account);
     }
 
-    public MainPageInfoDto getMainPageInfo(String nickname) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public MainPageInfoDto getMainPageInfo(Long accountId) {
+        Account account = getAccount(accountId);
 //        WorkoutRecord workoutRecord = workoutRecordRepository.findByAccountNDate(account, LocalDate.now()).orElse(null);
-        WorkoutRecordDto workoutRecordDto = getWorkoutRecordDto(nickname);
+        WorkoutRecordDto workoutRecordDto = getWorkoutRecordDto(accountId);
         FollowingListDto followingListDto = FollowingListDto.createDto();
-        followRepository.findFollowingListBySource(account).forEach((follow -> followingListDto.addFollowing(FollowInfoDto.createDto(nickname, follow.getFollowing()))));
-        CurrentRaceListDto currentRaceListDto = raceService.findCurrentRaceList(nickname);
+        followRepository.findFollowingListBySource(account).forEach((follow -> followingListDto.addFollowing(FollowInfoDto.createDto(account, follow.getFollowing()))));
+        CurrentRaceListDto currentRaceListDto = raceService.findCurrentRaceList(accountId);
 
         return MainPageInfoDto
                 .createDto(UserInfoDto.createDto(account), workoutRecordDto, followingListDto, currentRaceListDto);
@@ -120,10 +115,15 @@ public class AccountService {
         }
     }
 
-    private WorkoutRecordDto getWorkoutRecordDto(String nickname) {
+    public Account getAccount(Long accountId) {
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    }
+
+    private WorkoutRecordDto getWorkoutRecordDto(Long accountId) {
         WorkoutRecordDto workoutRecordDto;
         try {
-            workoutRecordDto = workoutRecordService.findWorkoutRecord(nickname, LocalDate.of(2022, 7, 21));
+            workoutRecordDto = workoutRecordService.findWorkoutRecord(accountId, LocalDate.of(2022, 7, 21));
         } catch (NoSuchRecordException e) {
             workoutRecordDto = null;
         }

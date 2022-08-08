@@ -31,8 +31,13 @@ public class AccountController {
 //    }
 
     @GetMapping("/re-issue")
-    public ResponseEntity<LoginResponseDto> reIssue(@RequestParam("nickname") String nickname, @RequestParam("refreshToken") String refreshToken) {
-        return new ResponseEntity<>(accountService.reIssueAccessToken(nickname, refreshToken), HttpStatus.OK);
+    @ApiOperation(value = "토큰 재발급", notes = "리프레시 토큰을 이용해 해당 아이디의 토큰을 재발급받는 API")
+    public ResponseEntity<LoginResponseDto> reIssue(
+            @ApiParam(value = "본인 ID", required = true, example = "2")
+            @RequestParam("accountId") Long accountId,
+            @ApiParam(value = "리프레시 토큰", required = true, example = "토큰")
+            @RequestParam("refreshToken") String refreshToken) {
+        return new ResponseEntity<>(accountService.reIssueAccessToken(accountId, refreshToken), HttpStatus.OK);
     }
 
     @GetMapping("/logout")
@@ -47,16 +52,19 @@ public class AccountController {
     }
 
     @GetMapping("/userInfo")
-    public ResponseEntity<UserInfoDto> userInfo(@RequestParam("nickname") String nickname) {
-        return new ResponseEntity<>(accountService.getUserInfo(nickname), HttpStatus.OK);
+    @ApiOperation(value = "유저 정보 가져오기", notes = "회원ID 값으로 유저 정보 가져오는 API")
+    public ResponseEntity<UserInfoDto> userInfo(
+            @ApiParam(value = "회원 ID", required = true, example = "2")
+            @RequestParam("accountId") Long accountId) {
+        return new ResponseEntity<>(accountService.getUserInfo(accountId), HttpStatus.OK);
     }
 
     @GetMapping("/main-page")
     @ApiOperation(value = "메인 페이지 전체 정보 로딩", notes = "로그인 후 메인페이지 로딩을 위해 먼저 호출하는 API")
     public ResponseEntity<MainPageInfoDto> mainPage(
-            @ApiParam(value = "본인 닉네임", required = true, example = "꾸운닉123")
-            @RequestParam("nickname") String nickname) {
-        return new ResponseEntity<>(accountService.getMainPageInfo(nickname), HttpStatus.OK);
+            @ApiParam(value = "본인 ID", required = true, example = "2")
+            @RequestParam("accountId") Long accountId) {
+        return new ResponseEntity<>(accountService.getMainPageInfo(accountId), HttpStatus.OK);
     }
 
     @GetMapping("/duplicate")
