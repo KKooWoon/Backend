@@ -14,6 +14,7 @@ import wit.shortterm1.kkoowoon.domain.etc.repository.FollowRepository;
 import wit.shortterm1.kkoowoon.domain.user.exception.NoSuchUserException;
 import wit.shortterm1.kkoowoon.domain.user.persist.Account;
 import wit.shortterm1.kkoowoon.domain.user.repository.AccountRepository;
+import wit.shortterm1.kkoowoon.domain.user.service.AccountService;
 import wit.shortterm1.kkoowoon.global.error.exception.ErrorCode;
 
 @Service
@@ -22,48 +23,42 @@ import wit.shortterm1.kkoowoon.global.error.exception.ErrorCode;
 public class FollowService {
 
     private final FollowRepository followRepository;
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
     @Transactional
-    public FollowResultDto makeFollow(String sourceNickname, String targetNickname) {
-        Account sourceAccount = accountRepository.findByNickname(sourceNickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
-        Account targetAccount = accountRepository.findByNickname(targetNickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public FollowResultDto makeFollow(Long sourceId, Long targetId) {
+        Account sourceAccount = accountService.getAccount(sourceId);
+        Account targetAccount = accountService.getAccount(targetId);
         followRepository.findFollowByTwo(sourceAccount, targetAccount).ifPresent(follow -> {
             throw new AlreadyFollowException(ErrorCode.FOLLOW_ALREADY_EXIST);
         });
         followRepository.save(Follow.of(sourceAccount, targetAccount));
-        return FollowResultDto.createDto(sourceNickname, targetNickname, true, true);
+        return FollowResultDto.createDto(sourceAccount, targetAccount, true, true);
     }
 
     @Transactional
-    public FollowResultDto unfollow(String sourceNickname, String targetNickname) {
-        Account sourceAccount = accountRepository.findByNickname(sourceNickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
-        Account targetAccount = accountRepository.findByNickname(targetNickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public FollowResultDto unfollow(Long sourceId, Long targetId) {
+        Account sourceAccount = accountService.getAccount(sourceId);
+        Account targetAccount = accountService.getAccount(targetId);
         Follow follow = followRepository.findFollowByTwo(sourceAccount, targetAccount)
                 .orElseThrow(() -> new NoSuchFollowException(ErrorCode.NO_SUCH_FOLLOW));
         followRepository.delete(follow);
-        return FollowResultDto.createDto(sourceNickname, targetNickname, false, true);
+        return FollowResultDto.createDto(sourceAccount, targetAccount, false, true);
     }
 
-    public FollowerListDto getFollowerList(String nickname) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public FollowerListDto getFollowerList(Long accountId) {
+        Account account = accountService.getAccount(accountId);
         FollowerListDto followerListDto = FollowerListDto.createDto();
         followRepository.findFollowerListByTarget(account)
-                .forEach(follow -> followerListDto.addFollower(FollowInfoDto.createDto(follow.getSource().getNickname(), account)));
+                .forEach(follow -> followerListDto.addFollower(FollowInfoDto.createDto(follow.getSource(), account)));
         return followerListDto;
     }
 
-    public FollowingListDto getFollowingList(String nickname) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public FollowingListDto getFollowingList(Long accountId) {
+        Account account = accountService.getAccount(accountId);
         FollowingListDto followingListDto = FollowingListDto.createDto();
         followRepository.findFollowingListBySource(account)
-                .forEach(follow -> followingListDto.addFollowing(FollowInfoDto.createDto(nickname, follow.getFollowing())));
+                .forEach(follow -> followingListDto.addFollowing(FollowInfoDto.createDto(account, follow.getFollowing())));
         return followingListDto;
     }
 }

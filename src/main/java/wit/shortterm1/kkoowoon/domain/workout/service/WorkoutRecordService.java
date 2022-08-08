@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wit.shortterm1.kkoowoon.domain.user.exception.NoSuchUserException;
 import wit.shortterm1.kkoowoon.domain.user.persist.Account;
 import wit.shortterm1.kkoowoon.domain.user.repository.AccountRepository;
+import wit.shortterm1.kkoowoon.domain.user.service.AccountService;
 import wit.shortterm1.kkoowoon.domain.workout.dto.CardioDto;
 import wit.shortterm1.kkoowoon.domain.workout.dto.DietDto;
 import wit.shortterm1.kkoowoon.domain.workout.dto.WeightDto;
@@ -28,16 +29,15 @@ import java.time.LocalDateTime;
 public class WorkoutRecordService {
 
     private final WorkoutRecordRepository workoutRecordRepository;
-    private final AccountRepository accountRepository;
     private final CardioRepository cardioRepository;
     private final WeightRepository weightRepository;
     private final DietRepository dietRepository;
     private final FoodRepository foodRepository;
     private final WeightSetRepository weightSetRepository;
+    private final AccountRepository accountRepository;
 
-    public WorkoutRecordDto findWorkoutRecord(String nickname, LocalDate date) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public WorkoutRecordDto findWorkoutRecord(Long accountId, LocalDate date) {
+        Account account = getAccount(accountId);
         WorkoutRecord workoutRecord = workoutRecordRepository.findByAccountNDate(account, date)
                 .orElseThrow(() -> new NoSuchRecordException(ErrorCode.NO_SUCH_WORKOUT_RECORD));
         WorkoutRecordDto workoutRecordDto = WorkoutRecordDto.createDto(workoutRecord);
@@ -54,10 +54,14 @@ public class WorkoutRecordService {
         return workoutRecordDto;
     }
 
-    @Transactional
-    public CardioCreateResultDto createCardioRecord(String nickname, LocalDate date, CreateCardioDto createCardioDto) {
-        Account account = accountRepository.findByNickname(nickname)
+    private Account getAccount(Long accountId) {
+        return accountRepository.findById(accountId)
                 .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    }
+
+    @Transactional
+    public CardioCreateResultDto createCardioRecord(Long accountId, LocalDate date, CreateCardioDto createCardioDto) {
+        Account account = getAccount(accountId);
         WorkoutRecord workoutRecord = findOrCreateWorkoutRecord(date, account);
         Cardio cardio = Cardio.of(createCardioDto.getName(), createCardioDto.getTime(), createCardioDto.getCalorie(), workoutRecord);
         cardioRepository.save(cardio);
@@ -66,9 +70,8 @@ public class WorkoutRecordService {
     }
 
     @Transactional
-    public WorkoutDeleteResultDto deleteCardioRecord(String nickname, Long cardioId) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public WorkoutDeleteResultDto deleteCardioRecord(Long accountId, Long cardioId) {
+        Account account = getAccount(accountId);
         Cardio cardio = cardioRepository.findByIdWithRecord(cardioId)
                 .orElseThrow(() -> new NoSuchRecordException(ErrorCode.NO_SUCH_CARDIO_RECORD));
         checkCardioOwnerOrNot(account, cardio);
@@ -77,9 +80,8 @@ public class WorkoutRecordService {
     }
 
     @Transactional
-    public DietCreateResultDto createDietRecord(String nickname, LocalDate date, CreateDietDto createDietDto) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public DietCreateResultDto createDietRecord(Long accountId, LocalDate date, CreateDietDto createDietDto) {
+        Account account = getAccount(accountId);
         WorkoutRecord workoutRecord = findOrCreateWorkoutRecord(date, account);
         Diet savedDiet = dietRepository.save(Diet.of(createDietDto.getName(), workoutRecord));
         createDietDto.getFoodList().forEach((foodDto ->
@@ -88,9 +90,8 @@ public class WorkoutRecordService {
     }
 
     @Transactional
-    public WorkoutDeleteResultDto deleteDietRecord(String nickname, Long dietId) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public WorkoutDeleteResultDto deleteDietRecord(Long accountId, Long dietId) {
+        Account account = getAccount(accountId);
         Diet diet = dietRepository.findByIdWithRecord(dietId)
                 .orElseThrow(() -> new NoSuchRecordException(ErrorCode.NO_SUCH_DIET_RECORD));
         checkDietOwnerOrNot(account, diet);
@@ -100,9 +101,8 @@ public class WorkoutRecordService {
     }
 
     @Transactional
-    public WeightCreateResultDto createWeightRecord(String nickname, LocalDate date, CreateWeightDto createWeightDto) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public WeightCreateResultDto createWeightRecord(Long accountId, LocalDate date, CreateWeightDto createWeightDto) {
+        Account account = getAccount(accountId);
         WorkoutRecord workoutRecord = findOrCreateWorkoutRecord(date, account);
         Weight savedWeight = weightRepository.save(Weight.of(createWeightDto.getName(), createWeightDto.getBody(), workoutRecord));
         createWeightDto.getWeightSetList().forEach(weightSetDto ->
@@ -111,9 +111,8 @@ public class WorkoutRecordService {
     }
 
     @Transactional
-    public WorkoutDeleteResultDto deleteWeightRecord(String nickname, Long weightId) {
-        Account account = accountRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchUserException(ErrorCode.NO_SUCH_USER));
+    public WorkoutDeleteResultDto deleteWeightRecord(Long accountId, Long weightId) {
+        Account account = getAccount(accountId);
         Weight weight = weightRepository.findByIdWithRecord(weightId)
                 .orElseThrow(() -> new NoSuchRecordException(ErrorCode.NO_SUCH_WEIGHT_RECORD));
         checkWeightOwnerOrNot(account, weight);
@@ -150,5 +149,10 @@ public class WorkoutRecordService {
         if (!weight.getWorkoutRecord().getAccount().getId().equals(account.getId())) {
             throw new IllegalWorkoutArgumentException(ErrorCode.DELETE_RECORD_MYSELF_ONLY);
         }
+    }
+
+    public WorkoutRecord getWorkoutRecord(Long recordId) {
+        return workoutRecordRepository.findById(recordId)
+                .orElseThrow(() -> new NoSuchRecordException(ErrorCode.NO_SUCH_WORKOUT_RECORD));
     }
 }
