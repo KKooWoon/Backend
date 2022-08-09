@@ -1,22 +1,25 @@
-package wit.shortterm1.kkoowoon.domain.workout.persist;
+package wit.shortterm1.kkoowoon.domain.confirm.persist;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wit.shortterm1.kkoowoon.domain.race.persist.Race;
+import wit.shortterm1.kkoowoon.domain.workout.persist.WorkoutRecord;
+import wit.shortterm1.kkoowoon.global.common.BaseTimeEntity;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity @Getter
-@Table(name = "confirm_workout")
+@Table(name = "confirm")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ConfirmWorkout {
+public class Confirm extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "confirm_workout_id")
+    @Column(name = "confirm_id")
     private Long id;
 
     @Column(name = "photo_url_1")
@@ -31,6 +34,9 @@ public class ConfirmWorkout {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "confirmed_at")
+    private LocalDate confirmedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "race_id")
     private Race race;
@@ -39,18 +45,19 @@ public class ConfirmWorkout {
     @JoinColumn(name = "workout_record_id")
     private WorkoutRecord workoutRecord;
 
-    private ConfirmWorkout(String photoUrl1, String photoUrl2, String photoUrl3,
-                          String description, Race race, WorkoutRecord workoutRecord) {
+    private Confirm(String photoUrl1, String photoUrl2, String photoUrl3,
+                    String description, Race race, WorkoutRecord workoutRecord) {
         this.photoUrl1 = photoUrl1;
         this.photoUrl2 = photoUrl2;
         this.photoUrl3 = photoUrl3;
         this.description = description;
+        this.confirmedAt = workoutRecord.getRecordDate();
         this.race = race;
         this.workoutRecord = workoutRecord;
     }
 
-    public static ConfirmWorkout of(String photoUrl1, String photoUrl2, String photoUrl3,
-                                    String description, Race race, WorkoutRecord workoutRecord) {
-        return new ConfirmWorkout(photoUrl1, photoUrl2, photoUrl3, description, race, workoutRecord);
+    public static Confirm of(String photoUrl1, String photoUrl2, String photoUrl3,
+                             String description, Race race, WorkoutRecord workoutRecord) {
+        return new Confirm(photoUrl1, photoUrl2, photoUrl3, description, race, workoutRecord);
     }
 }

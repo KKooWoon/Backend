@@ -47,7 +47,13 @@ public enum ErrorCode {
     NO_SUCH_WEIGHT_RECORD(404, "W004", "존재하지 않는 웨이트 기록입니다."),
     NO_SUCH_DIET_RECORD(404, "W005", "존재하지 않는 식단 기록입니다."),
     DELETE_RECORD_MYSELF_ONLY(403, "W006", "내 기록은 나만 지울 수 있습니다."),
-    ;
+
+    // Confirm
+    ALREADY_CONFIRMED(400, "CF001", "이미 해당 레이스에 인증된 운동 기록입니다."),
+    NO_SUCH_CONFIRMATION(404, "CF002", "존재하지 않는 운동 인증 내역입니다."),
+    NO_SUCH_COMMENT(404, "CF003", "존재하지 않는 댓글입니다."),
+    EDIT_COMMENT_MYSELF_ONLY(403, "CF004", "댓글은 댓글 작성자 본인만 수정/삭제 가능합니다."),
+   ;
 
     private final String code;
     private final String message;
