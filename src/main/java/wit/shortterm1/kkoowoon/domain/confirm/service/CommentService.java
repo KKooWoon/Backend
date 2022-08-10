@@ -20,14 +20,15 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CommentService {
+
     private final CommentRepository commentRepository;
     private final ConfirmService confirmService;
     private final AccountService accountService;
 
     @Transactional
-    public CommentCreateResultDto createComment(CommentCreateDto commentCreateDto) {
-        Confirm confirm = confirmService.getConfirm(commentCreateDto.getConfirmId());
-        Account account = accountService.getAccount(commentCreateDto.getAccountId());
+    public CommentCreateResultDto createComment(Long accountId, Long confirmId, CommentCreateDto commentCreateDto) {
+        Confirm confirm = confirmService.getConfirm(confirmId);
+        Account account = accountService.getAccount(accountId);
         Comment savedComment = commentRepository.save(Comment.of(commentCreateDto.getDescription(), isSelfComment(confirm, account), confirm, account));
         return CommentCreateResultDto.createDto(true, savedComment);
     }
@@ -41,10 +42,10 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentUpdateResultDto updateComment(CommentUpdateDto commentUpdateDto) {
-        Comment comment = getComment(commentUpdateDto.getCommentId());
+    public CommentUpdateResultDto updateComment(Long accountId, Long commentId, CommentUpdateDto commentUpdateDto) {
+        Comment comment = getComment(commentId);
 
-        checkCommentOwner(commentUpdateDto.getAccountId(), comment);
+        checkCommentOwner(accountId, comment);
 
         comment.updateDescription(commentUpdateDto.getDescription());
         Comment updatedComment = commentRepository.save(comment);
