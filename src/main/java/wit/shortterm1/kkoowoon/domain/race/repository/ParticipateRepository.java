@@ -19,8 +19,8 @@ public interface ParticipateRepository extends JpaRepository<Participate, Long> 
     @Query("SELECT CASE WHEN COUNT(p) > 0 " +
             "THEN TRUE ELSE FALSE END " +
             "FROM Participate p " +
-            "WHERE p.account=:account AND p.race=:race")
-    boolean existsByAccountAndRace(@Param("account") Account account, @Param("race")Race race);
+            "WHERE p.account.id=:accountId AND p.race.id=:raceId")
+    boolean existsByAccountAndRace(@Param("accountId") Long accountId, @Param("raceId")Long raceId);
 
     @Transactional(readOnly = true)
     @Query("SELECT p FROM Participate p WHERE p.account=:account AND p.race=:race")

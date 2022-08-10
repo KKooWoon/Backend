@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import wit.shortterm1.kkoowoon.domain.race.dto.request.RaceUpdateDto;
 import wit.shortterm1.kkoowoon.global.common.BaseTimeEntity;
 
 import javax.persistence.*;
@@ -66,5 +67,14 @@ public class Race extends BaseTimeEntity {
 
     public void subtractMemberCount() {
         memberCount -= 1;
+    }
+
+    public void updateRace(RaceUpdateDto updateDto) {
+        startedAt = updateDto.getStartedAt();
+        endedAt = updateDto.getEndedAt();
+        name = updateDto.getRaceName();
+        racePassword = updateDto.getRacePassword();
+        raceOwner = updateDto.getOwnerNickname();
+        raceTag = updateDto.getRaceTag();
     }
 }

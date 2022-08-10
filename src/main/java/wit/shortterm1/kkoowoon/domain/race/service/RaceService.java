@@ -3,6 +3,7 @@ package wit.shortterm1.kkoowoon.domain.race.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wit.shortterm1.kkoowoon.domain.race.dto.request.RaceUpdateDto;
 import wit.shortterm1.kkoowoon.domain.race.dto.response.*;
 import wit.shortterm1.kkoowoon.domain.race.dto.request.RaceCreateDto;
 import wit.shortterm1.kkoowoon.domain.race.exception.*;
@@ -14,7 +15,6 @@ import wit.shortterm1.kkoowoon.domain.race.repository.RaceRepository;
 import wit.shortterm1.kkoowoon.domain.user.exception.NoSuchUserException;
 import wit.shortterm1.kkoowoon.domain.user.persist.Account;
 import wit.shortterm1.kkoowoon.domain.user.repository.AccountRepository;
-import wit.shortterm1.kkoowoon.domain.user.service.AccountService;
 import wit.shortterm1.kkoowoon.domain.workout.exception.NoSuchRecordException;
 import wit.shortterm1.kkoowoon.global.error.exception.ErrorCode;
 
@@ -40,10 +40,9 @@ public class RaceService {
         Race race = Race.of(raceCreateDto.getStartedAt(), raceCreateDto.getEndedAt(), raceCreateDto.getRaceName(),
                 raceCode, raceCreateDto.getRacePassword(), account.getNickname(), raceCreateDto.getRaceTag());
         Race newRace = raceRepository.save(race);
-        participateRepository.save(Participate.of(account, race));
+        participateRepository.save(Participate.of(account, newRace));
         return RaceCreateResultDto
-                .createDto(true, newRace.getId(), LocalDateTime.now(), account.getNickname(),
-                        raceCode, newRace.getRacePassword(), newRace.getName());
+                .createDto(true, race);
     }
 
     private Account getAccount(Long accountId) {
@@ -57,7 +56,7 @@ public class RaceService {
         Race race = getRaceByRaceCode(raceCode);
 
         checkRacePassword(race.getRacePassword(), racePassword);
-        checkAlreadyParticipateRace(account, race);
+        checkAlreadyParticipateRace(account.getId(), race.getId());
 
         Participate participate = participateRepository.save(Participate.of(account, race));
         race.addMemberCount();
@@ -69,7 +68,7 @@ public class RaceService {
         Account account = getAccount(accountId);
         Race race = getRaceByRaceCode(raceCode);
 
-        checkUserExistInRace(account, race);
+        checkUserExistInRace(account.getId(), race.getId());
         checkLeaveRacePossible(account, race);
 
         Participate participate = participateRepository.findByAccountAndRace(account, race)
@@ -85,7 +84,7 @@ public class RaceService {
     public RaceDeleteResultDto deleteRace(Long accountId, String raceCode, String racePassword) {
         Account account = getAccount(accountId);
         Race race = getRaceByRaceCode(raceCode);
-        checkDeleteRacePossible(account, race);
+        checkEditRacePossible(account, race);
         checkRacePassword(race.getRacePassword(), racePassword);
 
         raceRepository.delete(race);
@@ -132,14 +131,26 @@ public class RaceService {
         return AllRaceListDto.createDto(currentRaceListDto, pastRaceListDto);
     }
 
+    @Transactional
+    public RaceUpdateResultDto updateRace(Long ownerId, Long raceId, RaceUpdateDto raceUpdateDto) {
+        Account account = getAccount(ownerId);
+        Race race = getRace(raceId);
+
+        checkEditRacePossible(account, race);
+
+        race.updateRace(raceUpdateDto);
+        Race updatedRace = raceRepository.save(race);
+        return RaceUpdateResultDto.createDto(true, updatedRace);
+    }
+
     private Race getRaceByRaceCode(String raceCode) {
         return raceRepository.findByRaceCode(raceCode)
                 .orElseThrow(() -> new NoSuchRaceException(ErrorCode.NO_SUCH_RACE));
     }
 
-    private void checkDeleteRacePossible(Account account, Race race) {
+    private void checkEditRacePossible(Account account, Race race) {
         if (!isRaceOwner(account, race)) {
-            throw new IllegalRaceException(ErrorCode.DELETE_RACE_OWNER_ONLY);
+            throw new IllegalRaceException(ErrorCode.EDIT_RACE_OWNER_ONLY);
         }
     }
 
@@ -153,14 +164,14 @@ public class RaceService {
         return account.getNickname().equals(race.getRaceOwner());
     }
 
-    private void checkUserExistInRace(Account account, Race race) {
-        if (!participateRepository.existsByAccountAndRace(account, race)) {
+    private void checkUserExistInRace(Long accountId, Long raceId) {
+        if (!participateRepository.existsByAccountAndRace(accountId, raceId)) {
             throw new NoSuchParticipateException(ErrorCode.NO_SUCH_USER_IN_RACE);
         }
     }
 
-    private void checkAlreadyParticipateRace(Account account, Race race) {
-        if (participateRepository.existsByAccountAndRace(account, race)) {
+    private void checkAlreadyParticipateRace(Long accountId, Long raceId) {
+        if (participateRepository.existsByAccountAndRace(accountId, raceId)) {
             throw new IllegalRaceException(ErrorCode.ALREADY_PARTICIPATE);
         }
     }

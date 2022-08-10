@@ -11,16 +11,16 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RaceCreateResultDto {
+public class RaceUpdateResultDto {
 
-    @ApiModelProperty(value = "레이스 생성 성공 여부", required = true, example = "true/false")
+    @ApiModelProperty(value = "레이스 수정 성공 여부", required = true, example = "true/false")
     private boolean isSuccess;
 
     @ApiModelProperty(value = "레이스 id", required = true, example = "3")
     private Long raceId;
 
-    @ApiModelProperty(value = "레이스 생성 시점", required = true, example = "2022-07-18T23:01:00")
-    private LocalDateTime createdAt;
+    @ApiModelProperty(value = "레이스 업데이트 시점", required = true, example = "2022-07-18T23:01:00")
+    private LocalDateTime updatedAt;
 
     @ApiModelProperty(value = "레이스 시작 일자", required = true, example = "2022-07-18")
     private LocalDate startedAt;
@@ -40,11 +40,11 @@ public class RaceCreateResultDto {
     @ApiModelProperty(value = "레이스 이름", required = true, example = "다이어트 레이스!")
     private String raceName;
 
-    public RaceCreateResultDto(boolean isSuccess, Long raceId, LocalDateTime createdAt, LocalDate startedAt,
+    private RaceUpdateResultDto(boolean isSuccess, Long raceId, LocalDateTime updatedAt, LocalDate startedAt,
                                LocalDate endedAt, String owner, String raceCode, String racePassword, String raceName) {
         this.isSuccess = isSuccess;
         this.raceId = raceId;
-        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.startedAt = startedAt;
         this.endedAt = endedAt;
         this.owner = owner;
@@ -53,8 +53,8 @@ public class RaceCreateResultDto {
         this.raceName = raceName;
     }
 
-    public static RaceCreateResultDto createDto(boolean isSuccess, Race race) {
-        return new RaceCreateResultDto(isSuccess, race.getId(), race.getCreatedAt(), race.getStartedAt(), race.getEndedAt(),
+    public static RaceUpdateResultDto createDto(boolean isSuccess, Race race) {
+        return new RaceUpdateResultDto(isSuccess, race.getId(), race.getUpdatedAt(), race.getStartedAt(), race.getEndedAt(),
                 race.getRaceOwner(), race.getRaceCode(), race.getRacePassword(), race.getName());
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wit.shortterm1.kkoowoon.domain.race.dto.request.RaceCreateDto;
+import wit.shortterm1.kkoowoon.domain.race.dto.request.RaceUpdateDto;
 import wit.shortterm1.kkoowoon.domain.race.dto.response.*;
 import wit.shortterm1.kkoowoon.domain.race.service.RaceService;
 
@@ -57,10 +58,22 @@ public class RaceController {
             @ApiParam(value = "레이스 주인 ID", required = true, example = "2")
             @RequestParam Long ownerId,
             @ApiParam(value = "레이스 코드", required = true, example = "AHDJIK")
-            @RequestBody String raceCode,
+            @RequestParam String raceCode,
             @ApiParam(value = "레이스 비밀번호", required = true, example = "kkoowoon123!")
-            @RequestBody String racePassword) {
+            @RequestParam String racePassword) {
         return new ResponseEntity<>(raceService.deleteRace(ownerId, raceCode, racePassword), HttpStatus.OK);
+    }
+
+    @PutMapping()
+    @ApiOperation(value = "레이스 수정", notes = "사용자 ID값과 수정 DTO를 통해 레이스 정보를 수정하는 API")
+    public ResponseEntity<RaceUpdateResultDto> updateRace(
+            @ApiParam(value = "레이스 주인 ID", required = true, example = "2")
+            @RequestParam Long ownerId,
+            @ApiParam(value = "레이스 ID", required = true, example = "1")
+            @RequestParam Long raceId,
+            @ApiParam(value = "레이스 수정 DTO", required = true, example = "RaceCreateDto 참조")
+            @RequestBody RaceUpdateDto raceUpdateDto) {
+        return new ResponseEntity<>(raceService.updateRace(ownerId, raceId, raceUpdateDto), HttpStatus.OK);
     }
 
     @GetMapping("/participate/info/current")

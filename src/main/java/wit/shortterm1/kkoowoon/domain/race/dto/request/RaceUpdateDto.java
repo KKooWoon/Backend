@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RaceCreateDto {
+public class RaceUpdateDto {
 
     @ApiModelProperty(value = "레이스 시작 일자", required = true, example = "2022-07-17")
     private LocalDate startedAt;
@@ -17,7 +17,7 @@ public class RaceCreateDto {
     @ApiModelProperty(value = "레이스 종료 일자", required = true, example = "2022-07-25")
     private LocalDate endedAt;
 
-    @ApiModelProperty(value = "레이스 이름", required = true, example = "다이어트 레이스!")
+    @ApiModelProperty(value = "레이스 이름", required = true, example = "다이어트 아니고 웨이트 레이스")
     private String raceName;
 
     @ApiModelProperty(value = "레이스 비밀번호", required = true, example = "kkoowoon1234")
@@ -29,7 +29,7 @@ public class RaceCreateDto {
     @ApiModelProperty(value = "레이스 주인 닉네임", required = true, example = "꾸운닉123")
     private String ownerNickname;
 
-    private RaceCreateDto(LocalDate startedAt, LocalDate endedAt,
+    private RaceUpdateDto(LocalDate startedAt, LocalDate endedAt,
                           String raceName, String racePassword, String raceTag, String ownerNickname) {
         this.startedAt = startedAt;
         this.endedAt = endedAt;
@@ -39,8 +39,8 @@ public class RaceCreateDto {
         this.ownerNickname = ownerNickname;
     }
 
-    public static RaceCreateDto createDto(LocalDate startedAt, LocalDate endedAt,
+    public static RaceUpdateDto createDto(LocalDate startedAt, LocalDate endedAt,
                                           String raceName, String racePassword, String raceTag, String ownerNickname) {
-        return new RaceCreateDto(startedAt, endedAt, raceName, racePassword, raceTag, ownerNickname);
+        return new RaceUpdateDto(startedAt, endedAt, raceName, racePassword, raceTag, ownerNickname);
     }
 }
