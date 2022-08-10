@@ -38,7 +38,7 @@ public enum ErrorCode {
     NO_SUCH_USER_IN_RACE(400, "R005", "해당 레이스에 존재하지 않는 사용자입니다."),
     OWNER_CANT_LEAVE_RACE(400, "R006", "레이스 방장은 레이스를 탈퇴할 수 없습니다. 레이스 삭제를 진행해주세요."),
     NO_SUCH_PARTICIPATE(404, "R007", "해당 유저가 해당 레이스를 참가한 기록이 존재하지 않습니다."),
-    DELETE_RACE_OWNER_ONLY(400, "R008", "레이스는 방장만 삭제할 수 있습니다."),
+    EDIT_RACE_OWNER_ONLY(400, "R008", "레이스는 방장만 삭제할 수 있습니다."),
 
     // Workout
     SET_EMPTY_ERROR(400, "W001", "이미 세트가 없는 상태입니다."),
