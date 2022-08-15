@@ -1,5 +1,6 @@
 package wit.shortterm1.kkoowoon.domain.confirm.dto.request;
 
+import com.sun.istack.NotNull;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class CommentCreateDto {
 
     @ApiModelProperty(value = "댓글 내용", required = true, example = "와 데피니션 미쳤어요!")
+    @NotNull
     private String description;
 
 }
