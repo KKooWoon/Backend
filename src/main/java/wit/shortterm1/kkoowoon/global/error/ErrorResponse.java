@@ -13,13 +13,13 @@ public class ErrorResponse {
     private int status;
     private String code;
 
-    private ErrorResponse(final ErrorCode code) {
+    protected ErrorResponse(ErrorCode code) {
         this.message = code.message();
         this.status = code.status();
         this.code = code.code();
     }
 
-    public static ErrorResponse of(ErrorCode commonErrorCode) {
-        return new ErrorResponse(commonErrorCode);
+    public static ErrorResponse of(ErrorCode errorCode) {
+        return new ErrorResponse(errorCode);
     }
 }

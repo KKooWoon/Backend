@@ -2,17 +2,16 @@ package wit.shortterm1.kkoowoon.global.error.exception;
 
 import java.util.NoSuchElementException;
 
-// Not Found Exception Root
-public class EntityNotFoundException extends NoSuchElementException {
+public class NoSuchImageException extends NoSuchElementException {
 
     private final ErrorCode errorCode;
 
-    public EntityNotFoundException(String message, ErrorCode errorCode) {
+    public NoSuchImageException(String message, ErrorCode errorCode) {
         super(message);
         this.errorCode = errorCode;
     }
 
-    public EntityNotFoundException(ErrorCode errorCode) {
+    public NoSuchImageException(ErrorCode errorCode) {
         super(errorCode.message());
         this.errorCode = errorCode;
     }
@@ -20,4 +19,5 @@ public class EntityNotFoundException extends NoSuchElementException {
     public ErrorCode getErrorCode() {
         return errorCode;
     }
+
 }
