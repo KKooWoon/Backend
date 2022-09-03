@@ -23,12 +23,25 @@ public interface ParticipateRepository extends JpaRepository<Participate, Long> 
     boolean existsByAccountAndRace(@Param("accountId") Long accountId, @Param("raceId")Long raceId);
 
     @Transactional(readOnly = true)
-    @Query("SELECT p FROM Participate p WHERE p.account=:account AND p.race=:race")
-    Optional<Participate> findByAccountAndRace(@Param("account") Account account, @Param("race") Race race);
+    @Query("SELECT p " +
+            "FROM Participate p " +
+            " LEFT JOIN FETCH p.race r" +
+            " LEFT JOIN FETCH p.account ac" +
+            " WHERE ac.id =:accountId AND r.id =:raceId")
+    Optional<Participate> findByAccountAndRace(@Param("accountId") Long accountId, @Param("raceId") Long raceId);
 
     @Transactional(readOnly = true)
     @Query("SELECT p FROM Participate p" +
             " LEFT JOIN FETCH p.race r" +
-            " WHERE p.account=:account")
-    List<Participate> findAllByAccount(@Param("account") Account account);
+            " LEFT JOIN FETCH p.account ac" +
+            " WHERE ac.id =:accountId" +
+            " ORDER BY p.createdAt DESC")
+    List<Participate> findAllByAccountId(@Param("accountId") Long accountId);
+
+    @Transactional(readOnly = true)
+    @Query("SELECT p FROM Participate p" +
+            " LEFT JOIN FETCH p.race r" +
+            " LEFT JOIN FETCH p.account ac" +
+            " WHERE r.id =:raceId")
+    List<Participate> findAllByRaceId(@Param("raceId") Long raceId);
 }

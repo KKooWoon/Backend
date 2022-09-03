@@ -51,12 +51,16 @@ public class Account extends BaseTimeEntity {
     @Column(name = "account_description")
     private String description;
 
-    @Column(name = "profile_image_url")
-    private String profileImageUrl;
+    @Column(name = "keyword")
+    private String keyword;
+
+    @Column(name = "photo_url")
+    private String photoUrl;
 
     private Account(String kakaoId, String nickname, int age,
                     double height, double weight, int level, int exp,
-                    double bodyFatPct, double skeletalMuscleMass, String description, String profileImageUrl) {
+                    double bodyFatPct, double skeletalMuscleMass, String description,
+                    String keyword, String photoUrl) {
         this.kakaoId = kakaoId;
         this.nickname = nickname;
         this.age = age;
@@ -67,13 +71,14 @@ public class Account extends BaseTimeEntity {
         this.bodyFatPct = bodyFatPct;
         this.skeletalMuscleMass = skeletalMuscleMass;
         this.description = description;
-        this.profileImageUrl = profileImageUrl;
+        this.keyword = keyword;
+        this.photoUrl = photoUrl;
         role = "USER";
     }
 
     public static Account of(String kakaoId, String nickname, int age,
                              double height, double weight, int level, int exp,
-                             double bodyFatPct, double skeletalMuscleMass, String description, String profileImageUrl) {
-        return new Account(kakaoId, nickname, age, height, weight, level, exp, bodyFatPct, skeletalMuscleMass, description, profileImageUrl);
+                             double bodyFatPct, double skeletalMuscleMass, String description, String keyword, String photoUrl) {
+        return new Account(kakaoId, nickname, age, height, weight, level, exp, bodyFatPct, skeletalMuscleMass, description, keyword, photoUrl);
     }
 }

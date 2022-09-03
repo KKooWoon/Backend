@@ -40,8 +40,12 @@ public class RaceCreateResultDto {
     @ApiModelProperty(value = "레이스 이름", required = true, example = "다이어트 레이스!")
     private String raceName;
 
-    public RaceCreateResultDto(boolean isSuccess, Long raceId, LocalDateTime createdAt, LocalDate startedAt,
-                               LocalDate endedAt, String owner, String raceCode, String racePassword, String raceName) {
+     @ApiModelProperty(value = "레이스 태그", required = true, example = "#다이어트")
+    private String raceTag;
+
+    private RaceCreateResultDto(boolean isSuccess, Long raceId, LocalDateTime createdAt,
+                               LocalDate startedAt, LocalDate endedAt, String owner, String raceCode,
+                               String racePassword, String raceName, String raceTag) {
         this.isSuccess = isSuccess;
         this.raceId = raceId;
         this.createdAt = createdAt;
@@ -51,10 +55,11 @@ public class RaceCreateResultDto {
         this.raceCode = raceCode;
         this.racePassword = racePassword;
         this.raceName = raceName;
+        this.raceTag = raceTag;
     }
 
     public static RaceCreateResultDto createDto(boolean isSuccess, Race race) {
         return new RaceCreateResultDto(isSuccess, race.getId(), race.getCreatedAt(), race.getStartedAt(), race.getEndedAt(),
-                race.getRaceOwner(), race.getRaceCode(), race.getRacePassword(), race.getName());
+                race.getRaceOwner(), race.getRaceCode(), race.getRacePassword(), race.getName(), race.getRaceTag());
     }
 }

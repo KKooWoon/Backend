@@ -33,8 +33,14 @@ public class RaceInfoDto {
     @ApiModelProperty(value = "레이스 태그", required = true, example = "#다이어트")
     private String raceTag;
 
-    public RaceInfoDto(Long raceId, LocalDate startedAt, LocalDate endedAt,
-                       int memberCount, String name, String raceCode, String raceTag) {
+    @ApiModelProperty(value = "비밀방 여부", required = true, example = "true/false")
+    private boolean privateOrNot;
+
+    @ApiModelProperty(value = "레이스 한줄 설명", required = true, example = "다이어트 방입니다.")
+    private String description;
+
+    private RaceInfoDto(Long raceId, LocalDate startedAt, LocalDate endedAt, int memberCount,
+                       String name, String raceCode, String raceTag, boolean privateOrNot, String description) {
         this.raceId = raceId;
         this.startedAt = startedAt;
         this.endedAt = endedAt;
@@ -42,10 +48,12 @@ public class RaceInfoDto {
         this.name = name;
         this.raceCode = raceCode;
         this.raceTag = raceTag;
+        this.privateOrNot = privateOrNot;
+        this.description = description;
     }
 
     public static RaceInfoDto createDto(Race race) {
-        return new RaceInfoDto(race.getId(), race.getStartedAt(), race.getEndedAt(),
-                race.getMemberCount(), race.getName(), race.getRaceCode(), race.getRaceTag());
+        return new RaceInfoDto(race.getId(), race.getStartedAt(), race.getEndedAt(), race.getMemberCount(),
+                race.getName(), race.getRaceCode(), race.getRaceTag(), race.isPrivateOrNot(), race.getDescription());
     }
 }

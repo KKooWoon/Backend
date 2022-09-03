@@ -9,18 +9,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ConfirmCheckResultDto {
 
-    @ApiModelProperty(value = "레이스 삭제 성공 여부", required = true, example = "true/false")
-    private boolean isExist;
+    @ApiModelProperty(value = "운동 인증 여부", required = true, example = "true/false")
+    private boolean isConfirmed;
 
     @ApiModelProperty(value = "삭제 시점", required = true, example = "2022-07-18T23:01:00")
     private Long confirmId;
 
-    public ConfirmCheckResultDto(boolean isExist, Long confirmId) {
-        this.isExist = isExist;
+    public ConfirmCheckResultDto(boolean isConfirmed, Long confirmId) {
+        this.isConfirmed = isConfirmed;
         this.confirmId = confirmId;
     }
 
-    public static ConfirmCheckResultDto createDto(boolean isExist, Long confirmId) {
-        return new ConfirmCheckResultDto(isExist, confirmId);
+    public static ConfirmCheckResultDto createDto(boolean isConfirmed, Long confirmId) {
+        return new ConfirmCheckResultDto(isConfirmed, confirmId);
     }
 }

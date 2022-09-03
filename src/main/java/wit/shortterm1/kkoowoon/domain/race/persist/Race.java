@@ -44,8 +44,14 @@ public class Race extends BaseTimeEntity {
     @Column(name = "race_tag")
     private String raceTag;
 
-    private Race(LocalDate startedAt, LocalDate endedAt, String name,
-                 String raceCode, String racePassword, String raceOwner, String raceTag) {
+    @Column(name = "private_or_not")
+    private boolean privateOrNot;
+
+    @Column(name = "description")
+    private String description;
+
+    private Race(LocalDate startedAt, LocalDate endedAt, String name, String raceCode,
+                 String racePassword, String raceOwner, String raceTag, boolean privateOrNot, String description) {
         this.startedAt = startedAt;
         this.endedAt = endedAt;
         memberCount = 1;
@@ -54,11 +60,13 @@ public class Race extends BaseTimeEntity {
         this.racePassword = racePassword;
         this.raceOwner = raceOwner;
         this.raceTag = raceTag;
+        this.privateOrNot = privateOrNot;
+        this.description = description;
     }
 
-    public static Race of(LocalDate startedAt, LocalDate endedAt, String name,
-                          String raceCode, String racePassword, String raceOwner, String raceTag) {
-        return new Race(startedAt, endedAt, name, raceCode, racePassword, raceOwner, raceTag);
+    public static Race of(LocalDate startedAt, LocalDate endedAt, String name, String raceCode,
+                          String racePassword, String raceOwner, String raceTag, boolean privateOrNot, String description) {
+        return new Race(startedAt, endedAt, name, raceCode, racePassword, raceOwner, raceTag, privateOrNot, description);
     }
 
     public void addMemberCount() {

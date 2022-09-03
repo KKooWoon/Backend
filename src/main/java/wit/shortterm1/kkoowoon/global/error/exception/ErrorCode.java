@@ -12,6 +12,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(500, "C004", "서버 내부 오류 입니다."),
     INVALID_TYPE_VALUE(400, "C005", "잘못된 타입 입니다."),
     HANDLE_ACCESS_DENIED(403, "C006", "잘못된 접근 입니다."),
+    EMPTY_TOKEN_ERROR(400, "C007", "액세스 토큰 정보가 없거나 입력되지 않았습니다."),
 
     // Account
     USER_ALREADY_EXIST(409, "A001", "이미 존재하는 유저입니다."),
@@ -47,12 +48,20 @@ public enum ErrorCode {
     NO_SUCH_WEIGHT_RECORD(404, "W004", "존재하지 않는 웨이트 기록입니다."),
     NO_SUCH_DIET_RECORD(404, "W005", "존재하지 않는 식단 기록입니다."),
     DELETE_RECORD_MYSELF_ONLY(403, "W006", "내 기록은 나만 지울 수 있습니다."),
+    OUT_OF_RACE_DURATION(400, "W007", "운동 기록은 레이스 기간을 벗어날 수 없습니다."),
+    NO_SUCH_FOOD(404, "W008", "존재하지 않는 음식 정보입니다."),
+    NO_SUCH_SET(404, "W009", "존재하지 않는 세트 정보입니다."),
 
     // Confirm
     ALREADY_CONFIRMED(400, "CF001", "이미 해당 레이스에 인증된 운동 기록입니다."),
     NO_SUCH_CONFIRMATION(404, "CF002", "존재하지 않는 운동 인증 내역입니다."),
     NO_SUCH_COMMENT(404, "CF003", "존재하지 않는 댓글입니다."),
     EDIT_COMMENT_MYSELF_ONLY(403, "CF004", "댓글은 댓글 작성자 본인만 수정/삭제 가능합니다."),
+    YET_CONFIRMED(400, "CF005", "아직 인증되지 않은 운동 기록입니다."),
+    WRONG_CONFIRM_OWNER(400, "CF006", "해당 사용자는 해당 인증의 주인이 아닙니다."),
+
+    // Image
+    NO_SUCH_IMAGE(404, "I001", "이미지가 존재하지 않습니다."),
    ;
 
     private final String code;

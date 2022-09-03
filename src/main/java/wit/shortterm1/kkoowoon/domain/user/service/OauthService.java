@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import wit.shortterm1.kkoowoon.domain.user.dto.KakaoUserInfo;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -75,9 +76,10 @@ public class OauthService {
         return access_Token;
     }
 
-    public String findKakaoUser(String token) {
+    public KakaoUserInfo findKakaoUser(String token) {
         String reqURL = "https://kapi.kakao.com/v2/user/me";
         String kakaoId = "";
+        String profileImageUrl = "";
         //access_token을 이용하여 사용자 정보 조회
         try {
             URL url = new URL(reqURL);
@@ -106,11 +108,9 @@ public class OauthService {
             JsonElement element = parser.parse(result);
 
             kakaoId = String.valueOf(element.getAsJsonObject().get("id").getAsInt());
-//            boolean hasEmail = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean();
-//            String email = "";
-//            if(hasEmail){
-//                email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
-//            }
+            profileImageUrl = "";
+            profileImageUrl = element.getAsJsonObject().get("properties").getAsJsonObject().get("profile_image").getAsString();
+
 //
 //            System.out.println("id : " + id);
 //            System.out.println("email : " + email);
@@ -120,6 +120,6 @@ public class OauthService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return kakaoId;
+        return new KakaoUserInfo(kakaoId, profileImageUrl);
     }
 }

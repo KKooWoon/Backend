@@ -11,6 +11,8 @@ import wit.shortterm1.kkoowoon.domain.avatar.dto.response.UnlockAvatarDto;
 import wit.shortterm1.kkoowoon.domain.avatar.dto.response.UnlockAvatarListDto;
 import wit.shortterm1.kkoowoon.domain.avatar.service.AvatarService;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @Api(tags = "아바타 관련 API")
 @RequiredArgsConstructor
@@ -36,6 +38,4 @@ public class AvatarController {
             @RequestParam int level) {
         return new ResponseEntity<>(avatarService.getLatestEarnedAvatar(accountId, level), HttpStatus.OK);
     }
-
-
 }

@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import wit.shortterm1.kkoowoon.domain.workout.dto.request.UpdateCardioDto;
 import wit.shortterm1.kkoowoon.global.common.BaseTimeEntity;
 
 import javax.persistence.*;
@@ -42,5 +43,11 @@ public class Cardio extends BaseTimeEntity {
 
     public static Cardio of(String name, int duration, double calorie, WorkoutRecord workoutRecord) {
         return new Cardio(name, duration, calorie, workoutRecord);
+    }
+
+    public void updateCardio(UpdateCardioDto updateCardioDto) {
+        name = updateCardioDto.getName();
+        duration = updateCardioDto.getTime();
+        calorie = updateCardioDto.getCalorie();
     }
 }

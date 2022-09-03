@@ -13,7 +13,10 @@ import java.util.List;
 @Repository
 public interface WeightSetRepository extends JpaRepository<WeightSet, Long> {
 
-    List<WeightSet> findAllByWeight(Weight weight);
+    @Query("SELECT ws FROM WeightSet ws" +
+        " LEFT JOIN FETCH ws.weight w" +
+        " WHERE w =:weight")
+    List<WeightSet> findAllByWeight(@Param("weight") Weight weight);
 
 //    @Query("SELECT w FROM Weight w" +
 //            " LEFT JOIN FETCH w.workoutRecord wr" +

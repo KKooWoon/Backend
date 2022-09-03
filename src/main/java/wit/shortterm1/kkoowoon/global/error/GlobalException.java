@@ -6,7 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wit.shortterm1.kkoowoon.domain.user.exception.KakaoLoginErrorResponse;
+import wit.shortterm1.kkoowoon.domain.user.exception.NoSuchKakaoUserException;
 import wit.shortterm1.kkoowoon.global.error.exception.BusinessException;
+import wit.shortterm1.kkoowoon.global.error.exception.EntityNotFoundException;
 import wit.shortterm1.kkoowoon.global.error.exception.ErrorCode;
 
 import java.nio.file.AccessDeniedException;
@@ -35,14 +38,28 @@ public class GlobalException {
     protected ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
         log.error("handleBusinessException", e);
 
-        final ErrorCode commonErrorCode = e.getErrorCode();
-        final ErrorResponse response = ErrorResponse.of(commonErrorCode);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(commonErrorCode.status()));
+        final ErrorCode errorCode = e.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.status()));
     }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException e) {
+        log.error("handleEntityNotFoundException", e);
+        final ErrorCode errorCode = e.getErrorCode();
+        return new ResponseEntity<>(ErrorResponse.of(errorCode), HttpStatus.valueOf(errorCode.status()));
+    }
+
+    @ExceptionHandler(NoSuchKakaoUserException.class)
+    protected ResponseEntity<KakaoLoginErrorResponse> handleNoSuchKakaoUserException(NoSuchKakaoUserException e) {
+        log.error("handleNoSuchKakaoUserException", e);
+        final ErrorCode errorCode = e.getErrorCode();
+        return new ResponseEntity<>(KakaoLoginErrorResponse.of(e.getKakaoId(), e.getProfilePhotoUrl(), errorCode), HttpStatus.valueOf(errorCode.status()));
+    }
+    
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handleException(Exception e) {
-        log.error("handleEntityNotFoundException", e);
+        log.error("handleException", e);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }

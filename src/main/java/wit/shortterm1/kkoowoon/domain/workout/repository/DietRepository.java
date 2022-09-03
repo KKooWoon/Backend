@@ -24,6 +24,7 @@ public interface DietRepository extends JpaRepository<Diet, Long> {
 
     @Query("SELECT d FROM Diet d" +
             " LEFT JOIN FETCH d.workoutRecord wr" +
+            " LEFT JOIN FETCH d.foodList fl" +
             " WHERE wr =:record")
     @Transactional(readOnly = true)
     List<Diet> findByRecord(@Param("record") WorkoutRecord record);

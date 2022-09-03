@@ -16,15 +16,13 @@ import java.util.Optional;
 public interface ConfirmRepository extends JpaRepository<Confirm, Long> {
 
     @Query("SELECT cw FROM Confirm cw" +
-        " LEFT JOIN FETCH cw.race r" +
-        " WHERE r =:race AND cw.confirmedAt =:recordDate")
-    List<Confirm> findAllByRaceAndDate(@Param("race") Race race, @Param("recordDate") LocalDate recordDate);
+        " WHERE cw.confirmedAt =:recordDate")
+    List<Confirm> findAllByDate(@Param("recordDate") LocalDate recordDate);
 
     @Query("SELECT cw FROM Confirm cw" +
-            " LEFT JOIN FETCH cw.race r" +
             " LEFT JOIN FETCH cw.workoutRecord wr" +
-            " WHERE r =:race AND wr =:workoutRecord")
-    Optional<Confirm> findByRaceAndRecord(@Param("race") Race race, @Param("workoutRecord") WorkoutRecord workoutRecord);
+            " WHERE wr =:workoutRecord")
+    Optional<Confirm> findByRecord(@Param("workoutRecord") WorkoutRecord workoutRecord);
 
 //    @Query("SELECT wr FROM WorkoutRecord wr" +
 //            " LEFT JOIN FETCH wr.account ac" +

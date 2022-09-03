@@ -10,6 +10,9 @@ import wit.shortterm1.kkoowoon.domain.workout.persist.Food;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FoodDto {
 
+    @ApiModelProperty(value = "음식 ID", required = true, example = "23")
+    private Long foodId;
+
     @ApiModelProperty(value = "음식 이름", required = true, example = "닭가슴살")
     private String name;
 
@@ -19,13 +22,14 @@ public class FoodDto {
     @ApiModelProperty(value = "음식 칼로리", required = true, example = "324.8(kcal)")
     private double calorie;
 
-    private FoodDto(String name, double weight, double calorie) {
+    private FoodDto(Long foodId, String name, double weight, double calorie) {
+        this.foodId = foodId;
         this.name = name;
         this.weight = weight;
         this.calorie = calorie;
     }
 
     public static FoodDto createDto(Food food) {
-        return new FoodDto(food.getName(), food.getFoodWeight(), food.getFoodCalorie());
+        return new FoodDto(food.getId(), food.getName(), food.getFoodWeight(), food.getFoodCalorie());
     }
 }

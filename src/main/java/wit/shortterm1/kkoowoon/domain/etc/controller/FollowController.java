@@ -7,10 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wit.shortterm1.kkoowoon.domain.etc.dto.response.FollowOrNotDto;
 import wit.shortterm1.kkoowoon.domain.etc.dto.response.FollowResultDto;
 import wit.shortterm1.kkoowoon.domain.etc.dto.response.FollowerListDto;
 import wit.shortterm1.kkoowoon.domain.etc.dto.response.FollowingListDto;
 import wit.shortterm1.kkoowoon.domain.etc.service.FollowService;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @Api(tags = "팔로우 관련 API")
@@ -21,23 +24,19 @@ public class FollowController {
     private final FollowService followService;
 
     @PostMapping
-    @ApiOperation(value = "팔로우를 새로 하는 API", notes = "소스ID -> 타겟ID로 팔로우가 되는 API")
+    @ApiOperation(value = "팔로우를 새로 하는 API", notes = "나 자신 -> 타겟ID로 팔로우가 되는 API")
     public ResponseEntity<FollowResultDto> follow(
-            @ApiParam(value = "팔로우하는 소스 ID(나 자신)", required = true, example = "3")
-            @RequestParam Long sourceId,
             @ApiParam(value = "팔로우 대상 ID", required = true, example = "4")
-            @RequestParam Long targetId) {
-        return new ResponseEntity<>(followService.makeFollow(sourceId, targetId), HttpStatus.OK);
+            @RequestParam Long targetId, HttpServletRequest request) {
+        return new ResponseEntity<>(followService.makeFollow(request, targetId), HttpStatus.OK);
     }
 
     @DeleteMapping
-    @ApiOperation(value = "언팔로우를 하는 API", notes = "소스ID -> 타겟ID로 언팔로우하는 API")
+    @ApiOperation(value = "언팔로우를 하는 API", notes = "나 자신 -> 타겟ID로 언팔로우하는 API")
     public ResponseEntity<FollowResultDto> unfollow(
-            @ApiParam(value = "팔로우하는 소스 ID(나 자신)", required = true, example = "3")
-            @RequestParam Long sourceId,
             @ApiParam(value = "팔로우 대상 ID", required = true, example = "4")
-            @RequestParam Long targetId) {
-        return new ResponseEntity<>(followService.unfollow(sourceId, targetId), HttpStatus.OK);
+            @RequestParam Long targetId, HttpServletRequest request) {
+        return new ResponseEntity<>(followService.unfollow(request, targetId), HttpStatus.OK);
     }
 
     @GetMapping("/followerList")
@@ -54,5 +53,15 @@ public class FollowController {
             @ApiParam(value = "유저 ID(나 자신)", required = true, example = "3")
             @RequestParam Long accountId) {
         return new ResponseEntity<>(followService.getFollowingList(accountId), HttpStatus.OK);
+    }
+
+    @GetMapping
+    @ApiOperation(value = "서로 팔로우 하는지 확인하기", notes = "서로 팔로우하고 있는지 확인하는 API")
+    public ResponseEntity<FollowOrNotDto> getFollowOrNot(
+            @ApiParam(value = "유저 ID(나 자신)", required = true, example = "3")
+            @RequestParam Long sourceId,
+            @ApiParam(value = "유저 ID(팔로우 여부를 확인할 대상)", required = true, example = "3")
+            @RequestParam Long targetId) {
+        return new ResponseEntity<>(followService.getFollowOrNot(sourceId, targetId), HttpStatus.OK);
     }
 }

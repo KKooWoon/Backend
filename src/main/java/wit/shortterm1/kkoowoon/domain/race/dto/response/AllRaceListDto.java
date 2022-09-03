@@ -14,18 +14,18 @@ public class AllRaceListDto {
     private int count = 0;
 
     @ApiModelProperty(value = "현재 참여중인 레이스 리스트", required = true, example = "리스트")
-    private CurrentRaceListDto currentRaceListDto;
+    private CurrentRaceWithConfirmListDto currentRaceWithConfirmListDto;
 
     @ApiModelProperty(value = "완료한 레이스 리스트", required = true, example = "리스트")
     private PastRaceListDto pastRaceListDto;
 
-    private AllRaceListDto(CurrentRaceListDto currentRaceListDto, PastRaceListDto pastRaceListDto) {
-        count = currentRaceListDto.getCount() + pastRaceListDto.getCount();
-        this.currentRaceListDto = currentRaceListDto;
+    private AllRaceListDto(CurrentRaceWithConfirmListDto currentRaceWithConfirmListDto, PastRaceListDto pastRaceListDto) {
+        count = currentRaceWithConfirmListDto.getCount() + pastRaceListDto.getPastInfoDtoList().size();
+        this.currentRaceWithConfirmListDto = currentRaceWithConfirmListDto;
         this.pastRaceListDto = pastRaceListDto;
     }
 
-    public static AllRaceListDto createDto(CurrentRaceListDto currentRaceListDto, PastRaceListDto pastRaceListDto) {
-        return new AllRaceListDto(currentRaceListDto, pastRaceListDto);
+    public static AllRaceListDto createDto(CurrentRaceWithConfirmListDto currentRaceWithConfirmListDto, PastRaceListDto pastRaceListDto) {
+        return new AllRaceListDto(currentRaceWithConfirmListDto, pastRaceListDto);
     }
 }

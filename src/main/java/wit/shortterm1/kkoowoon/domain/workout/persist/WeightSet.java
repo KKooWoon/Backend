@@ -4,9 +4,12 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import wit.shortterm1.kkoowoon.domain.workout.dto.WeightSetDto;
 import wit.shortterm1.kkoowoon.global.common.BaseTimeEntity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity @Getter
 @Table(name = "weightSet")
@@ -40,5 +43,11 @@ public class WeightSet extends BaseTimeEntity {
 
     public static WeightSet of(int sett, int reps, double setWeight, Weight weight) {
         return new WeightSet(sett, reps, setWeight, weight);
+    }
+
+    public void updateWeightSet(WeightSetDto weightSetDto) {
+        sett = weightSetDto.getSett();
+        reps = weightSetDto.getReps();
+        setWeight = weightSetDto.getSetWeight();
     }
 }

@@ -45,6 +45,9 @@ dependencies {
 
 	// json handling
 	implementation 'com.google.code.gson:gson:2.9.0'
+
+	// aws
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 tasks.named('test') {

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import wit.shortterm1.kkoowoon.domain.user.persist.Account;
 import wit.shortterm1.kkoowoon.global.common.BaseTimeEntity;
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -26,6 +27,9 @@ public class Participate extends BaseTimeEntity {
     @Column(name = "total_score")
     private int totalScore;
 
+    @Column(name = "latest_confirm_date")
+    private LocalDate latestConfirmDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
@@ -34,14 +38,26 @@ public class Participate extends BaseTimeEntity {
     @JoinColumn(name = "race_id")
     private Race race;
 
-    private Participate(int consecutiveDays, int totalScore, Account account, Race race) {
-        this.consecutiveDays = consecutiveDays;
-        this.totalScore = totalScore;
+    public Participate(Account account, Race race) {
+        consecutiveDays = 0;
+        totalScore = 0;
+        latestConfirmDate = null;
         this.account = account;
         this.race = race;
     }
 
     public static Participate of(Account account, Race race) {
-        return new Participate(0, 0, account, race);
+        return new Participate(account, race);
+    }
+
+    public void updateFromConfirm(LocalDate date) {
+        if (latestConfirmDate != null && latestConfirmDate.plusDays(1L).isEqual(date)) {
+            consecutiveDays += 1;
+            totalScore += consecutiveDays * 100;
+        } else {
+            consecutiveDays = 1;
+            totalScore += 100;
+        }
+        latestConfirmDate = date;
     }
 }

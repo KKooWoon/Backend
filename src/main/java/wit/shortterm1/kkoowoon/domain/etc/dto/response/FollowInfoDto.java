@@ -40,6 +40,6 @@ public class FollowInfoDto {
 
     public static FollowInfoDto createDto(Account source, Account target) {
         return new FollowInfoDto(source.getId(), source.getNickname(), target.getId(),
-                target.getNickname(), target.getProfileImageUrl(), target.getDescription());
+                target.getNickname(), target.getPhotoUrl(), target.getDescription());
     }
 }

@@ -12,8 +12,10 @@ import wit.shortterm1.kkoowoon.domain.confirm.persist.Confirm;
 import wit.shortterm1.kkoowoon.domain.confirm.repository.CommentRepository;
 import wit.shortterm1.kkoowoon.domain.user.persist.Account;
 import wit.shortterm1.kkoowoon.domain.user.service.AccountService;
+import wit.shortterm1.kkoowoon.global.common.jwt.JwtProvider;
 import wit.shortterm1.kkoowoon.global.error.exception.ErrorCode;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 @Service
@@ -24,28 +26,33 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ConfirmService confirmService;
     private final AccountService accountService;
+    private final JwtProvider jwtProvider;
 
     @Transactional
-    public CommentCreateResultDto createComment(Long accountId, Long confirmId, CommentCreateDto commentCreateDto) {
+    public CommentCreateResultDto createComment(HttpServletRequest request, Long confirmId, CommentCreateDto commentCreateDto) {
         Confirm confirm = confirmService.getConfirm(confirmId);
-        Account account = accountService.getAccount(accountId);
+        String kakaoId = jwtProvider.getKakaoId(request);
+        Account account = accountService.getAccountByKakaoId(kakaoId);
         Comment savedComment = commentRepository.save(Comment.of(commentCreateDto.getDescription(), isSelfComment(confirm, account), confirm, account));
         return CommentCreateResultDto.createDto(true, savedComment);
     }
 
     @Transactional
-    public CommentDeleteResultDto deleteComment(Long accountId, Long commentId) {
+    public CommentDeleteResultDto deleteComment(HttpServletRequest request, Long commentId) {
+        String kakaoId = jwtProvider.getKakaoId(request);
+        Account account = accountService.getAccountByKakaoId(kakaoId);
         Comment comment = getComment(commentId);
-        checkCommentOwner(accountId, comment);
+        checkCommentOwner(account.getId(), comment);
         commentRepository.delete(comment);
         return CommentDeleteResultDto.createDto(true, LocalDateTime.now());
     }
 
     @Transactional
-    public CommentUpdateResultDto updateComment(Long accountId, Long commentId, CommentUpdateDto commentUpdateDto) {
+    public CommentUpdateResultDto updateComment(HttpServletRequest request, Long commentId, CommentUpdateDto commentUpdateDto) {
         Comment comment = getComment(commentId);
-
-        checkCommentOwner(accountId, comment);
+        String kakaoId = jwtProvider.getKakaoId(request);
+        Account account = accountService.getAccountByKakaoId(kakaoId);
+        checkCommentOwner(account.getId(), comment);
 
         comment.updateDescription(commentUpdateDto.getDescription());
         Comment updatedComment = commentRepository.save(comment);

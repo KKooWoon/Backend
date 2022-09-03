@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import wit.shortterm1.kkoowoon.domain.user.dto.request.SignUpRequestDto;
 import wit.shortterm1.kkoowoon.domain.user.dto.response.*;
 import wit.shortterm1.kkoowoon.domain.user.service.AccountService;
@@ -18,16 +19,29 @@ import javax.servlet.http.HttpServletRequest;
 @Api(tags = "유저 관련 API")
 @RequestMapping("/api/v1/user")
 public class AccountController {
+
     private final AccountService accountService;
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<TempResponse> signUp(@RequestBody SignUpRequestDto signUpReqDto) {
-        return new ResponseEntity<>(accountService.signUp(signUpReqDto), HttpStatus.CREATED);
+    @GetMapping("/oauth/kakao")
+    @ApiOperation(value = "카카오 로그인", notes = "카카오에서 발급해준 Authorization Code를 통해 로그인 시도를 하는 API." +
+            "만약 회원가입되어 있는 유저라면 리프레시 토큰과 액세스 토큰, 유저 정보를 리턴해주고, 신규회원이라면 DB에 존재하지 않으므로 404 Exception을 터트림.")
+    public ResponseEntity<LoginResponseDto> login(
+            @ApiParam(value = "카카오에서 발급해준 Authorization Code", required = true, example = "2183u21u90321")
+            @RequestParam("code") String code) {
+        return new ResponseEntity<>(accountService.login(code), HttpStatus.OK);
     }
 
+    @PostMapping("/sign-up")
+    @ApiOperation(value = "회원가입하기", notes = "회원가입 DTO를 통해 회원가입을 진행하는 API")
+    public ResponseEntity<SignUpResultDto> signUp(
+            @ApiParam(value = "회원가입 DTO", required = true, example = "회원가입 DTO")
+            @RequestBody SignUpRequestDto signUpReqDto) {
+        return new ResponseEntity<>(accountService.signUp(signUpReqDto), HttpStatus.CREATED);
+    }
 //    @PostMapping("/login")
 //    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginDto) {
 //        return new ResponseEntity<>(accountService.login(loginDto.getEmail(), loginDto.getPassword()), HttpStatus.OK);
+
 //    }
 
     @GetMapping("/re-issue")
@@ -41,22 +55,27 @@ public class AccountController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<TempResponse> logout(HttpServletRequest request) {
-        String accessToken = request.getHeader("Authorization").substring(7);
-        return new ResponseEntity<>(accountService.logout(accessToken), HttpStatus.OK);
+    @ApiOperation(value = "로그아웃", notes = "헤더에 있는 Authorization 정보로 로그아웃을 하는 API")
+    public ResponseEntity<LogoutResultDto> logout(
+            HttpServletRequest request) {
+        return new ResponseEntity<>(accountService.logout(request), HttpStatus.OK);
     }
 
-    @GetMapping("/oauth/kakao")
-    public ResponseEntity<LoginResponseDto> newLogin(@RequestParam("code") String code) {
-        return new ResponseEntity<>(accountService.newLogin(code), HttpStatus.OK);
-    }
-
-    @GetMapping("/userInfo")
+    @GetMapping("/info")
     @ApiOperation(value = "유저 정보 가져오기", notes = "회원ID 값으로 유저 정보 가져오는 API")
     public ResponseEntity<UserInfoDto> userInfo(
             @ApiParam(value = "회원 ID", required = true, example = "2")
             @RequestParam("accountId") Long accountId) {
         return new ResponseEntity<>(accountService.getUserInfo(accountId), HttpStatus.OK);
+    }
+
+    @GetMapping("/user-list")
+    @ApiOperation(value = "닉네임으로 친구 찾기", notes = "이름값으로 해당하는 사용자 리스트 가져오는 API")
+    public ResponseEntity<UserInfoWithFollowListDto> findUserListByNickname(
+            @ApiParam(value = "닉네임", required = true, example = "꾸운닉123")
+            @RequestParam("nickname") String nickname,
+            HttpServletRequest request) {
+        return new ResponseEntity<>(accountService.findUserListByNickname(request, nickname), HttpStatus.OK);
     }
 
     @GetMapping("/main-page")

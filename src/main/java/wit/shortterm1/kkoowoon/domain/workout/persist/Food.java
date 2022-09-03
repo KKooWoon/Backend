@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import wit.shortterm1.kkoowoon.domain.workout.dto.FoodDto;
 import wit.shortterm1.kkoowoon.global.common.BaseTimeEntity;
 
 import javax.persistence.*;
@@ -41,5 +42,11 @@ public class Food extends BaseTimeEntity {
 
     public static Food of(String name, double foodWeight, double foodCalorie, Diet diet) {
         return new Food(name, foodWeight, foodCalorie, diet);
+    }
+
+    public void updateFood(FoodDto foodDto) {
+        name = foodDto.getName();
+        foodWeight = foodDto.getWeight();
+        foodCalorie = foodDto.getCalorie();
     }
 }

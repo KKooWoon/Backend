@@ -15,9 +15,11 @@ import java.util.Optional;
 public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     @Query("SELECT f FROM Follow f" +
-            " WHERE f.source =:source AND f.following =:target")
+            " LEFT JOIN FETCH f.source s" +
+            " LEFT JOIN FETCH f.following fl" +
+            " WHERE s.id =:sourceId AND fl.id =:targetId")
     @Transactional(readOnly = true)
-    Optional<Follow> findFollowByTwo(@Param("source") Account source, @Param("target") Account target);
+    Optional<Follow> findFollowByTwo(@Param("sourceId") Long sourceId, @Param("targetId") Long targetId);
 
     @Query("SELECT f FROM Follow f" +
             " LEFT JOIN FETCH f.source s" +

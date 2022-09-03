@@ -9,8 +9,8 @@
 //import org.springframework.web.context.request.NativeWebRequest;
 //import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 //import org.springframework.web.method.support.ModelAndViewContainer;
-//import wit.shortterm1.exercisetogether.domain.domain.Account;
-//import wit.shortterm1.exercisetogether.domain.domain.AuthAccount;
+//import wit.shortterm1.kkoowoon.domain.user.persist.Account;
+//import wit.shortterm1.kkoowoon.domain.user.persist.AuthAccount;
 //
 //@Component
 //public class AuthenticationArgumentResolver implements HandlerMethodArgumentResolver {

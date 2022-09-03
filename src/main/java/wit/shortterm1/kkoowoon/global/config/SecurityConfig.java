@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import wit.shortterm1.kkoowoon.domain.exception.CustomAuthenticationEntryPoint;
+import wit.shortterm1.kkoowoon.global.error.exception.CustomAuthenticationEntryPoint;
 import wit.shortterm1.kkoowoon.global.common.jwt.JwtAuthenticationFilter;
 import wit.shortterm1.kkoowoon.global.common.jwt.JwtProvider;
 
@@ -58,7 +58,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 X
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/v1/user/sign-up", "/api/v1/user/login", "/api/v1/user/oauth/*").permitAll()
+                .antMatchers("/api/v1/user/sign-up", "/api/v1/user/login", "/api/v1/user/duplicate", "/api/v1/user/oauth/*").permitAll()
+                .antMatchers("/v3/api-docs").permitAll()
+                .antMatchers("/configuration/ui").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/configuration/security").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/swagger-ui/*").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/v3/**").permitAll()
+//                .antMatchers("/api/v1/**").permitAll()
                 .antMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()

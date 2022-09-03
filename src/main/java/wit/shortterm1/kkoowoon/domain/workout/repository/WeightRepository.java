@@ -17,6 +17,7 @@ public interface WeightRepository extends JpaRepository<Weight, Long> {
 
     @Query("SELECT w FROM Weight w" +
             " LEFT JOIN FETCH w.workoutRecord wr" +
+            " LEFT JOIN FETCH w.weightSetList wsl" +
             " WHERE wr =:record")
     @Transactional(readOnly = true)
     List<Weight> findByRecord(@Param("record") WorkoutRecord record);
