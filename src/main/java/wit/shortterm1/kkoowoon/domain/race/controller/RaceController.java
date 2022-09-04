@@ -118,8 +118,10 @@ public class RaceController {
     @ApiOperation(value = "사용자가 참여헀던 '완료된 레이스' 조회", notes = "사용자가 참여헀던 '완료된 레이스' 조회하는 API")
     public ResponseEntity<PastRaceListDto> getPastRaceList(
             @ApiParam(value = "레이스 참여자 ID", required = true, example = "2")
-            @RequestParam Long accountId) {
-        return new ResponseEntity<>(raceService.findPastRaceList(accountId), HttpStatus.OK);
+            @RequestParam Long accountId,
+            @ApiParam(value = "날짜(오늘 값 주면 됨)", required = true, example = "2022-07-21")
+            @RequestParam @DateTimeFormat(iso = DATE) LocalDate date) {
+        return new ResponseEntity<>(raceService.findPastRaceList(accountId, date), HttpStatus.OK);
     }
 
     @GetMapping("/participate/info/all")

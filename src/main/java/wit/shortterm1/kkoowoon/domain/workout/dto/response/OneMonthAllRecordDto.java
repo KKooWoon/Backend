@@ -11,13 +11,13 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OneMonthAllRecordDto {
 
-    private final List<OneMonthRecordDto> oneMonthRecordDtoList = new ArrayList<>();
+    private final List<OneMonthRecordWithDateDto> oneMonthRecordDtoList = new ArrayList<>();
 
     public static OneMonthAllRecordDto createDto() {
         return new OneMonthAllRecordDto();
     }
 
-    public void addOneMonthRecordDto(OneMonthRecordDto dto) {
+    public void addOneMonthRecordDto(OneMonthRecordWithDateDto dto) {
         oneMonthRecordDtoList.add(dto);
     }
 

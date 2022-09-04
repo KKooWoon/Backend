@@ -71,13 +71,13 @@ public class WorkoutRecordController {
     @ApiOperation(value = "특정 달의 특정 레이스의 모든 운동 기록을 가져오기", notes = "유산소 생성 DTO와 날짜를 기반으로 유산소 운동을 추가하는 API")
     public ResponseEntity<OneMonthRecordDto> getMonthOneRecord(
             @ApiParam(value = "회원 ID", required = true, example = "2")
-            @RequestParam("accountId") @NotNull Long accountId,
+            @RequestParam("accountId") Long accountId,
             @ApiParam(value = "레이스 ID", required = true, example = "1")
-            @RequestParam("raceId") @NotNull Long raceId,
+            @RequestParam("raceId") Long raceId,
             @ApiParam(value = "년도", required = true, example = "2022")
-            @RequestParam("year") @NotNull int year,
+            @RequestParam("year") int year,
             @ApiParam(value = "월", required = true, example = "7")
-            @RequestParam("month") @NotNull int month) {
+            @RequestParam("month") int month) {
         return new ResponseEntity<>(workoutRecordService.findOneMonthOneRecord(accountId, raceId, year, month), HttpStatus.OK);
     }
 
@@ -97,9 +97,9 @@ public class WorkoutRecordController {
     @ApiOperation(value = "유산소 운동을 수정하는 API", notes = "유산소 수정 DTO와 날짜를 기반으로 유산소 운동을 수정하는 API")
     public ResponseEntity<CardioUpdateResultDto> updateCardioRecord(
             @ApiParam(value = "유산소 운동 ID", required = true, example = "4")
-            @RequestParam @NotNull Long cardioId,
+            @RequestParam Long cardioId,
             @ApiParam(value = "유산소 수정 DTO", required = true, example = "문서 참고")
-            @RequestBody @NotNull UpdateCardioDto updateCardioDto, HttpServletRequest request) {
+            @RequestBody UpdateCardioDto updateCardioDto, HttpServletRequest request) {
         return new ResponseEntity<>(workoutRecordService.updateCardioRecord(request, cardioId, updateCardioDto), HttpStatus.OK);
     }
 
@@ -128,9 +128,9 @@ public class WorkoutRecordController {
     @ApiOperation(value = "식단을 수정하는 API", notes = "식단 수정 DTO와 날짜를 기반으로 식단을 수정하는 API")
     public ResponseEntity<DietUpdateResultDto> updateDietRecord(
             @ApiParam(value = "식단 ID", required = true, example = "4")
-            @RequestParam @NotNull Long dietId,
+            @RequestParam Long dietId,
             @ApiParam(value = "식단 수정 DTO", required = true, example = "문서 참고")
-            @RequestBody @NotNull UpdateDietDto updateDietDto, HttpServletRequest request) {
+            @RequestBody UpdateDietDto updateDietDto, HttpServletRequest request) {
         return new ResponseEntity<>(workoutRecordService.updateDietRecord(request, dietId, updateDietDto), HttpStatus.OK);
     }
 
@@ -158,9 +158,9 @@ public class WorkoutRecordController {
     @ApiOperation(value = "웨이트 운동을 수정하는 API", notes = "웨이트 수정 DTO와 날짜를 기반으로 웨이트 운동을 수정하는 API")
     public ResponseEntity<WeightUpdateResultDto> updateWeightRecord(
             @ApiParam(value = "웨이트 ID", required = true, example = "4")
-            @RequestParam @NotNull Long weightId,
+            @RequestParam Long weightId,
             @ApiParam(value = "웨이트 수정 DTO", required = true, example = "문서 참고")
-            @RequestBody @NotNull UpdateWeightDto updateWeightDto, HttpServletRequest request) {
+            @RequestBody UpdateWeightDto updateWeightDto, HttpServletRequest request) {
         return new ResponseEntity<>(workoutRecordService.updateWeightRecord(request, weightId, updateWeightDto), HttpStatus.OK);
     }
 

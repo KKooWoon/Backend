@@ -3,9 +3,6 @@ package wit.shortterm1.kkoowoon.domain.race.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wit.shortterm1.kkoowoon.domain.confirm.dto.response.ConfirmCheckResultDto;
-import wit.shortterm1.kkoowoon.domain.confirm.repository.ConfirmRepository;
-import wit.shortterm1.kkoowoon.domain.confirm.service.ConfirmService;
 import wit.shortterm1.kkoowoon.domain.race.dto.request.RaceUpdateDto;
 import wit.shortterm1.kkoowoon.domain.race.dto.response.*;
 import wit.shortterm1.kkoowoon.domain.race.dto.request.RaceCreateDto;
@@ -93,7 +90,7 @@ public class RaceService {
 
         Participate participate = participateRepository.save(Participate.of(account, race));
         race.addMemberCount();
-        return RaceParticipateResultDto.createDto(true, account.getNickname(), race.getName(), participate.getCreatedAt());
+        return RaceParticipateResultDto.createDto(true, race.getRaceOwner(), race.getId(), participate.getCreatedAt());
     }
 
     @Transactional
@@ -131,7 +128,7 @@ public class RaceService {
         CurrentRaceListDto currentRaceListDto = CurrentRaceListDto.createDto();
         participateList
                 .stream()
-                .filter(this::isCurrentRace)
+                .filter(p -> isCurrentRaceWithDate(LocalDate.now(), p))
                 .forEach(p -> currentRaceListDto.addRace(RaceInfoDto.createDto(p.getRace())));
 
         return currentRaceListDto;
@@ -141,7 +138,7 @@ public class RaceService {
         CurrentRaceListDto currentRaceListDto = CurrentRaceListDto.createDto();
         participateRepository.findAllByAccountId(accountId)
                 .stream()
-                .filter(this::isCurrentRace)
+                .filter(p -> isCurrentRaceWithDate(LocalDate.now(), p))
                 .forEach(p -> currentRaceListDto.addRace(RaceInfoDto.createDto(p.getRace())));
 
         return currentRaceListDto;
@@ -151,7 +148,7 @@ public class RaceService {
         CurrentRaceWithConfirmListDto currentRaceWithConfirmListDto = CurrentRaceWithConfirmListDto.createDto();
         participateRepository.findAllByAccountId(accountId)
                 .stream()
-                .filter(this::isCurrentRace)
+                .filter(p -> isCurrentRaceWithDate(date, p))
                 .forEach(p -> {
                     WorkoutRecord workoutRecord = workoutRecordRepository.findByAccountNRaceNDate(accountId, p.getRace().getId(), date)
                             .orElseThrow(() -> new NoSuchRecordException(ErrorCode.NO_SUCH_WORKOUT_RECORD));
@@ -166,11 +163,11 @@ public class RaceService {
                 .orElseThrow(() -> new NoSuchRecordException(ErrorCode.NO_SUCH_RACE));
     }
 
-    public PastRaceListDto findPastRaceList(Long accountId) {
+    public PastRaceListDto findPastRaceList(Long accountId, LocalDate date) {
         PastRaceListDto pastRaceListDto = PastRaceListDto.createDto();
         participateRepository.findAllByAccountId(accountId)
                 .stream()
-                .filter(p -> !isCurrentRace(LocalDate.now(), p))
+                .filter(p -> !isCurrentRaceWithDate(date, p))
                 .forEach(p -> pastRaceListDto.addRace(RaceInfoDto.createDto(p.getRace())));
 
         return pastRaceListDto;
@@ -181,7 +178,7 @@ public class RaceService {
         CurrentRaceWithConfirmListDto dto = CurrentRaceWithConfirmListDto.createDto();
         participateRepository.findAllByAccountId(accountId)
                 .forEach(p -> {
-                    if (!isCurrentRace(date, p)) pastRaceListDto.addRace(RaceInfoDto.createDto(p.getRace()));
+                    if (!isCurrentRaceWithDate(date, p)) pastRaceListDto.addRace(RaceInfoDto.createDto(p.getRace()));
                     else {
                         workoutRecordRepository.findByAccountNRaceNDate(accountId, p.getRace().getId(), date)
                                 .ifPresentOrElse(workoutRecord -> dto.addRace(RaceInfoWithConfirmDto.createDto(p.getRace(), workoutRecord.isConfirmed())),
@@ -266,13 +263,8 @@ public class RaceService {
         return builder.toString();
     }
 
-    private boolean isCurrentRace(Participate p) {
-        return p.getRace().getEndedAt().isAfter(LocalDate.now().minusDays(1L))
-                && p.getRace().getStartedAt().isBefore(LocalDate.now().plusDays(1L));
-    }
-
-    private boolean isCurrentRace(LocalDate date, Participate p) {
-        return date.isBefore(p.getRace().getEndedAt()) && date.isAfter(p.getRace().getStartedAt());
+    private boolean isCurrentRaceWithDate(LocalDate date, Participate p) {
+        return date.isBefore(p.getRace().getEndedAt().plusDays(1L));
     }
 
     public CurrentRaceListDto findRaceListWithName(String name) {

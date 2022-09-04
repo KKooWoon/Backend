@@ -48,9 +48,9 @@ public class ConfirmController {
             @RequestParam("recordId") Long recordId,
             @ApiParam(value = "이미지 파일", required = true, example = "imageFile")
             @RequestPart("file") MultipartFile imageFile,
-            @ApiParam(value = "인증 생성 DTO", required = true, example = "RaceCreateDto 참조")
-            @RequestPart ConfirmCreateDto confirmCreateDto, HttpServletRequest request) {
-        return new ResponseEntity<>(confirmService.createConfirmation(request, recordId, imageFile, confirmCreateDto), HttpStatus.OK);
+            @ApiParam(value = "인증 설명", required = true, example = "오운완~ 너무 알찼다!")
+            @RequestPart("description") String description, HttpServletRequest request) {
+        return new ResponseEntity<>(confirmService.createConfirmation(request, recordId, imageFile, description), HttpStatus.OK);
     }
 
     @DeleteMapping

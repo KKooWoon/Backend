@@ -32,7 +32,7 @@ public interface WorkoutRecordRepository extends JpaRepository<WorkoutRecord, Lo
     @Transactional(readOnly = true)
     Optional<WorkoutRecord> findByAccountNRaceNDate(@Param("accountId") Long accountId, @Param("raceId") Long raceId, @Param("date")LocalDate date);
 
-    @Query("SELECT wr FROM WorkoutRecord wr" +
+    @Query("SELECT DISTINCT wr FROM WorkoutRecord wr" +
             " LEFT JOIN FETCH wr.account ac" +
             " LEFT JOIN FETCH wr.race r" +
             " LEFT JOIN FETCH wr.cardioList" +

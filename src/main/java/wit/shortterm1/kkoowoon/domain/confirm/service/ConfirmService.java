@@ -95,17 +95,16 @@ public class ConfirmService {
     }
 
     @Transactional
-    public ConfirmCreateResultDto createConfirmation(HttpServletRequest request, Long recordId, MultipartFile imageFile, ConfirmCreateDto dto) {
+    public ConfirmCreateResultDto createConfirmation(HttpServletRequest request, Long recordId, MultipartFile imageFile, String description) {
         WorkoutRecord workoutRecord = workoutRecordService.getWorkoutRecord(recordId);
         String kakaoId = jwtProvider.getKakaoId(request);
         Account account = accountService.getAccountByKakaoId(kakaoId);
         checkUserInRace(account.getId(), workoutRecord.getRace().getId());   // 레이스에 참여중인 사용자인지 체크
         checkAlreadyConfirmed(workoutRecord,  workoutRecord.getRace()); // 이미 인증했는지 체크
 
-//        String fileName = storeImageFile(imageFile);
         String fileName = imageService.upload(imageFile);
         Confirm savedConfirm = confirmRepository
-                .save(Confirm.of(fileName, dto.getPhotoUrl2(), dto.getPhotoUrl3(), dto.getDescription(), workoutRecord));
+                .save(Confirm.of(fileName, null, null, description, workoutRecord));
         workoutRecord.confirmWorkout();
         Participate participate = participateRepository.findByAccountAndRace(account.getId(), workoutRecord.getRace().getId())
                 .orElseThrow(() -> new NoSuchParticipateException(ErrorCode.NO_SUCH_PARTICIPATE));

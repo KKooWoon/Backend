@@ -12,7 +12,10 @@ import wit.shortterm1.kkoowoon.domain.race.service.RaceService;
 import wit.shortterm1.kkoowoon.domain.user.exception.NoSuchUserException;
 import wit.shortterm1.kkoowoon.domain.user.persist.Account;
 import wit.shortterm1.kkoowoon.domain.user.repository.AccountRepository;
+import wit.shortterm1.kkoowoon.domain.workout.dto.CardioDto;
+import wit.shortterm1.kkoowoon.domain.workout.dto.DietDto;
 import wit.shortterm1.kkoowoon.domain.workout.dto.FoodDto;
+import wit.shortterm1.kkoowoon.domain.workout.dto.WeightDto;
 import wit.shortterm1.kkoowoon.domain.workout.dto.request.*;
 import wit.shortterm1.kkoowoon.domain.workout.dto.response.*;
 import wit.shortterm1.kkoowoon.domain.workout.exception.IllegalWorkoutArgumentException;
@@ -198,26 +201,22 @@ public class WorkoutRecordService {
     public OneMonthAllRecordDto findOneMonthAllRecord(Long accountId, int year, int month) {
         LocalDate firstDayOfMonth = LocalDate.of(year, month, 1);
         LocalDate lastDayOfMonth = LocalDate.of(year, month, 1).plusMonths(1).minusDays(1);
+        Map<LocalDate, List<WorkoutRecordWithRaceDto>> map = new HashMap<>();
         OneMonthAllRecordDto oneMonthAllRecordDto = OneMonthAllRecordDto.createDto();
         participateRepository.findAllByAccountId(accountId).forEach(p -> {
-            List<WorkoutRecordDto> workoutRecordDtoList = new ArrayList<>();
-            List<WorkoutRecord> workoutRecordList = workoutRecordRepository.findByAccountNRaceWithRange(accountId, p.getRace().getId(), firstDayOfMonth, lastDayOfMonth);
-//            workoutRecordList.forEach(workoutRecord -> {
-//                WorkoutRecordDto workoutRecordDto = WorkoutRecordDto.createDto(workoutRecord);
-//                dietRepository.findByRecord(workoutRecord).forEach((diet) -> {
-//                    DietDto dietDto = DietDto.createDto(diet, diet.getFoodList());
-//                    workoutRecordDto.addDietDto(dietDto);
-//                });
-//                weightRepository.findByRecord(workoutRecord).forEach(weight -> {
-//                    WeightDto weightDto = WeightDto.createDto(weight, weight.getWeightSetList());
-//                    workoutRecordDto.addWeightDto(weightDto);
-//                });
-////                cardioRepository.findByRecord(workoutRecord)
-////                        .forEach((cardio -> workoutRecordDto.addCardioDto(CardioDto.createDto(cardio))));
-//                workoutRecordDtoList.add(workoutRecordDto);
-//            });
-            oneMonthAllRecordDto.addOneMonthRecordDto(OneMonthRecordDto.createDto(p.getRace().getId(), workoutRecordDtoList));
+            workoutRecordRepository
+                    .findByAccountNRaceWithRange(accountId, p.getRace().getId(), firstDayOfMonth, lastDayOfMonth)
+                    .forEach(wr -> {
+                        map.computeIfAbsent(wr.getRecordDate(), k -> new ArrayList<>())
+                                .add(WorkoutRecordWithRaceDto.createDto(wr));
+                    });
         });
+        List<LocalDate> keyList = new ArrayList<>(map.keySet());
+        keyList.sort(LocalDate::compareTo);
+        for (LocalDate recordDate : keyList) {
+            OneMonthRecordWithDateDto dto = OneMonthRecordWithDateDto.createDto(recordDate, map.get(recordDate));
+            oneMonthAllRecordDto.addOneMonthRecordDto(dto);
+        }
         return oneMonthAllRecordDto;
     }
 
@@ -228,17 +227,10 @@ public class WorkoutRecordService {
         List<WorkoutRecord> workoutRecordList = workoutRecordRepository.findByAccountNRaceWithRange(accountId, raceId, firstDayOfMonth, lastDayOfMonth);
         List<WorkoutRecordDto> workoutRecordDtoList = new ArrayList<>();
         workoutRecordList.forEach(workoutRecord -> {
+            System.out.println("workoutRecord.getId() = " + workoutRecord.getId());
+        });
+        workoutRecordList.forEach(workoutRecord -> {
             WorkoutRecordDto workoutRecordDto = WorkoutRecordDto.createDto(workoutRecord);
-//            dietRepository.findByRecord(workoutRecord).forEach((diet) -> {
-//                DietDto dietDto = DietDto.createDto(diet, foodRepository.findAllByDiet(diet));
-//                workoutRecordDto.addDietDto(dietDto);
-//            });
-//            weightRepository.findByRecord(workoutRecord).forEach(weight -> {
-//                WeightDto weightDto = WeightDto.createDto(weight, weightSetRepository.findAllByWeight(weight));
-//                workoutRecordDto.addWeightDto(weightDto);
-//            });
-//            cardioRepository.findByRecord(workoutRecord)
-//                    .forEach((cardio -> workoutRecordDto.addCardioDto(CardioDto.createDto(cardio))));
             workoutRecordDtoList.add(workoutRecordDto);
         });
         return OneMonthRecordDto.createDto(raceId, workoutRecordDtoList);
